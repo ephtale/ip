@@ -118,6 +118,22 @@ public class Aoko {
                         }
                         System.out.println(LINE);
                     }
+                    case "delete" -> {
+                        Integer index = parseIndex(parts);
+                        if (index == null || index < 1 || index > tasks.size()) {
+                            System.out.println(LINE);
+                            System.out.println("Please provide a valid task number to delete (e.g., \"delete 3\").");
+                            System.out.println(LINE);
+                            break;
+                        }
+
+                        Task removed = tasks.remove(index - 1);
+                        System.out.println(LINE);
+                        System.out.println("Noted. I've removed this task:");
+                        System.out.println("  " + removed.display());
+                        System.out.println("Now you have " + tasks.size() + " tasks in the list.");
+                        System.out.println(LINE);
+                    }
                     case "mark" -> {
                         Integer index = parseIndex(parts);
                         if (index == null || index < 1 || index > tasks.size()) {
@@ -212,9 +228,10 @@ public class Aoko {
                     }
                     case "bye" -> exit = true;
                     default -> {
-                        Task task = new Todo(userInput);
-                        tasks.add(task);
-                        printTaskAdded(task, tasks.size());
+                        System.out.println(LINE);
+                        System.out.println("That's not a command I recognize.");
+                        System.out.println("Available commands: list, mark, unmark, delete, todo, deadline, event, bye");
+                        System.out.println(LINE);
                     }
                 }
 
