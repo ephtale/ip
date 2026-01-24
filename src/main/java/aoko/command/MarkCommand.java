@@ -6,9 +6,17 @@ import aoko.task.Task;
 import aoko.task.TaskList;
 import aoko.ui.Ui;
 
+/**
+ * Marks a task as done by its 1-based index.
+ */
 public class MarkCommand implements AokoCommand {
     private final String[] parts;
 
+    /**
+     * Creates a mark command.
+     *
+     * @param parts Tokenized user input (command and arguments).
+     */
     public MarkCommand(String[] parts) {
         this.parts = parts;
     }

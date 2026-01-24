@@ -6,9 +6,17 @@ import aoko.task.Task;
 import aoko.task.TaskList;
 import aoko.ui.Ui;
 
+/**
+ * Deletes a task by its 1-based index.
+ */
 public class DeleteCommand implements AokoCommand {
     private final String[] parts;
 
+    /**
+     * Creates a delete command.
+     *
+     * @param parts Tokenized user input (command and arguments).
+     */
     public DeleteCommand(String[] parts) {
         this.parts = parts;
     }

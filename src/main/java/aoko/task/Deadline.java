@@ -11,16 +11,29 @@ public class Deadline extends Task {
     private final LocalDateTime by;
     private final boolean hasTime;
 
+    /**
+     * Creates a deadline task.
+     *
+     * @param description Task description.
+     * @param by Deadline date/time.
+     * @param hasTime Whether the original input included a time.
+     */
     public Deadline(String description, LocalDateTime by, boolean hasTime) {
         super(description);
         this.by = by;
         this.hasTime = hasTime;
     }
 
+    /**
+     * Returns the deadline date/time.
+     */
     public LocalDateTime getBy() {
         return by;
     }
 
+    /**
+     * Returns whether the deadline includes a time component.
+     */
     public boolean hasTime() {
         return hasTime;
     }

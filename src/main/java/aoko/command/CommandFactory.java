@@ -2,7 +2,13 @@ package aoko.command;
 
 import aoko.parser.Parser;
 
+/**
+ * Creates concrete {@link AokoCommand} instances from parsed user input.
+ */
 public class CommandFactory {
+    /**
+     * Maps a parsed command to the corresponding executable command object.
+     */
     public static AokoCommand fromParsed(Parser.ParsedCommand parsed) {
         return switch (parsed.command) {
             case LIST -> new ListCommand();

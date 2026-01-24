@@ -4,6 +4,9 @@ import aoko.storage.Storage;
 import aoko.task.TaskList;
 import aoko.ui.Ui;
 
+/**
+ * Represents an executable user command.
+ */
 public interface AokoCommand {
     /**
      * Executes the command.
