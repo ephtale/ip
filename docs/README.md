@@ -39,18 +39,45 @@ todo borrow book
 
 ### `deadline <description> /by <by>`
 Adds a Deadline task to be done before a given time/date.  
-`<by>` is stored as a **string** (no parsing required).
+`<by>` is parsed into a real date/time.
+
+Accepted formats:
+- `yyyy-MM-dd` (e.g., `2019-10-15`) → displayed as `MMM dd yyyy` (e.g., `Oct 15 2019`)
+- `d/M/yyyy HHmm` (e.g., `2/12/2019 1800`) → displayed as `MMM dd yyyy HH:mm`
 ```
-deadline return book /by Sunday
-deadline do homework /by no idea :-p
+deadline return book /by 2019-10-15
+deadline return book /by 2/12/2019 1800
 ```
 
 ### `event <description> /from <from> /to <to>`
 Adds an Event task with a start and end.  
-`<from>` and `<to>` are stored as **strings**.
+`<from>` and `<to>` are parsed into real dates/times.
+
+Accepted formats for `/from`:
+- `yyyy-MM-dd`
+- `yyyy-MM-dd HHmm` or `yyyy-MM-dd HH:mm`
+- `d/M/yyyy HHmm` (e.g., `2/12/2019 1800`)
+
+Accepted formats for `/to`:
+- Any full date/time format above
+- Or time-only `HHmm` / `H:mm` (assumed to be on the same date as `/from`)
 ```
-event project meeting /from Mon 2pm /to 4pm
-event orientation week /from 4/10/2019 /to 11/10/2019
+event project meeting /from 2019-10-15 1400 /to 1600
+event orientation week /from 2019-10-04 /to 2019-10-11
+```
+
+### `on <date>`
+Shows tasks that occur on a specific date.
+
+- Deadlines match when they are due on that date.
+- Events match when their parsed `from`/`to` dates span that date (only events whose `from` and `to` can be parsed are considered).
+
+Accepted formats:
+- `yyyy-MM-dd` (e.g., `2019-10-15`)
+- `d/M/yyyy` (e.g., `2/12/2019`)
+
+```
+on 2019-06-06
 ```
 
 ### `mark <taskNumber>`
@@ -88,7 +115,7 @@ bye
 
 Examples in `list`:
 - `1.[T][X] read book`
-- `2.[D][ ] return book (by: June 6th)`
+- `2.[D][ ] return book (by: Jun 06 2019)`
 - `3.[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)`
 
 ---
@@ -104,7 +131,7 @@ Aoko saves automatically whenever the task list changes (add/mark/unmark/delete)
 ### Storage format (one task per line)
 ```
 T | 1 | read book
-D | 0 | return book | June 6th
+D | 0 | return book | 2019-06-06
 E | 0 | project meeting | Aug 6th 2pm | 4pm
 ```
 

@@ -12,6 +12,12 @@ then
     rm ACTUAL.TXT
 fi
 
+# delete saved data from previous run (for deterministic tests)
+if [ -e "../data/aoko.txt" ]
+then
+    rm ../data/aoko.txt
+fi
+
 # compile the code into the bin folder, terminates if error occurred
 if ! javac -cp ../src/main/java -Xlint:none -d ../bin ../src/main/java/*.java
 then
@@ -19,8 +25,8 @@ then
     exit 1
 fi
 
-# run the program, feed commands from input.txt file and redirect the output to the ACTUAL.TXT
-java -classpath ../bin Aoko < input.txt > ACTUAL.TXT
+# run the program from project root so ./data/aoko.txt resolves correctly
+(cd .. && java -classpath bin Aoko < text-ui-test/input.txt > text-ui-test/ACTUAL.TXT)
 
 # convert to UNIX format
 cp EXPECTED.TXT EXPECTED-UNIX.TXT
