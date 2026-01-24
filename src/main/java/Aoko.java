@@ -3,17 +3,24 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
 public class Aoko {
     private static final String LINE = "____________________________________________________________";
     private static final Path SAVE_PATH = Paths.get("data", "aoko.txt");
+    private static final DateTimeFormatter DISPLAY_DATE_ONLY = DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.ENGLISH);
 
     private enum Command {
-        LIST, MARK, UNMARK, DELETE, TODO, DEADLINE, EVENT, BYE, UNKNOWN;
+        LIST, MARK, UNMARK, DELETE, TODO, DEADLINE, EVENT, ON, BYE, UNKNOWN;
 
         static Command parse(String token) {
             if (token == null) {
@@ -27,6 +34,7 @@ public class Aoko {
                 case "todo" -> TODO;
                 case "deadline" -> DEADLINE;
                 case "event" -> EVENT;
+                case "on" -> ON;
                 case "bye" -> BYE;
                 default -> UNKNOWN;
             };
@@ -81,11 +89,16 @@ public class Aoko {
     }
 
     private static class Deadline extends Task {
-        private final String by;
+        private static final DateTimeFormatter DISPLAY_DATE = DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.ENGLISH);
+        private static final DateTimeFormatter DISPLAY_DATE_TIME = DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm", Locale.ENGLISH);
 
-        Deadline(String description, String by) {
+        private final LocalDateTime by;
+        private final boolean hasTime;
+
+        Deadline(String description, LocalDateTime by, boolean hasTime) {
             super(description);
             this.by = by;
+            this.hasTime = hasTime;
         }
 
         @Override
@@ -95,18 +108,26 @@ public class Aoko {
 
         @Override
         protected String taskDetails() {
-            return description + " (by: " + by + ")";
+            String formatted = hasTime ? by.format(DISPLAY_DATE_TIME) : by.toLocalDate().format(DISPLAY_DATE);
+            return description + " (by: " + formatted + ")";
         }
     }
 
     private static class Event extends Task {
-        private final String from;
-        private final String to;
+        private static final DateTimeFormatter DISPLAY_DATE = DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.ENGLISH);
+        private static final DateTimeFormatter DISPLAY_DATE_TIME = DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm", Locale.ENGLISH);
 
-        Event(String description, String from, String to) {
+        private final LocalDateTime from;
+        private final LocalDateTime to;
+        private final boolean fromHasTime;
+        private final boolean toHasTime;
+
+        Event(String description, LocalDateTime from, boolean fromHasTime, LocalDateTime to, boolean toHasTime) {
             super(description);
             this.from = from;
             this.to = to;
+            this.fromHasTime = fromHasTime;
+            this.toHasTime = toHasTime;
         }
 
         @Override
@@ -116,7 +137,16 @@ public class Aoko {
 
         @Override
         protected String taskDetails() {
-            return description + " (from: " + from + " to: " + to + ")";
+            String formattedFrom = fromHasTime ? from.format(DISPLAY_DATE_TIME) : from.toLocalDate().format(DISPLAY_DATE);
+
+            String formattedTo;
+            if (toHasTime && fromHasTime && from.toLocalDate().equals(to.toLocalDate())) {
+                formattedTo = to.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm", Locale.ENGLISH));
+            } else {
+                formattedTo = toHasTime ? to.format(DISPLAY_DATE_TIME) : to.toLocalDate().format(DISPLAY_DATE);
+            }
+
+            return description + " (from: " + formattedFrom + " to: " + formattedTo + ")";
         }
     }
 
@@ -147,6 +177,54 @@ public class Aoko {
                     System.out.println("Here are the tasks in your list:");
                     for (int i = 0; i < tasks.size(); i++) {
                         System.out.println((i + 1) + "." + tasks.get(i).display());
+                    }
+                    System.out.println(LINE);
+                }
+                case ON -> {
+                    if (remainder.isEmpty()) {
+                        System.out.println(LINE);
+                        System.out.println("Please provide a date (e.g., \"on 2019-10-15\" or \"on 2/12/2019\").");
+                        System.out.println(LINE);
+                        break;
+                    }
+
+                    LocalDate date = parseDateOnly(remainder);
+                    if (date == null) {
+                        System.out.println(LINE);
+                        System.out.println("I couldn't understand that date.");
+                        System.out.println("Try: yyyy-MM-dd (e.g., 2019-10-15) or d/M/yyyy (e.g., 2/12/2019)");
+                        System.out.println(LINE);
+                        break;
+                    }
+
+                    List<Task> matches = new ArrayList<>();
+                    for (Task task : tasks) {
+                        if (task instanceof Deadline deadline) {
+                            if (deadline.by.toLocalDate().equals(date)) {
+                                matches.add(task);
+                            }
+                            continue;
+                        }
+                        if (task instanceof Event event) {
+                            LocalDate fromDate = event.from.toLocalDate();
+                            LocalDate toDate = event.to.toLocalDate();
+                            if ((date.isEqual(fromDate) || date.isAfter(fromDate))
+                                    && (date.isEqual(toDate) || date.isBefore(toDate))) {
+                                matches.add(task);
+                            }
+                        }
+                    }
+
+                    System.out.println(LINE);
+                    if (matches.isEmpty()) {
+                        System.out.println("No tasks found on " + date.format(DISPLAY_DATE_ONLY) + ".");
+                        System.out.println(LINE);
+                        break;
+                    }
+
+                    System.out.println("Here are the tasks on " + date.format(DISPLAY_DATE_ONLY) + ":");
+                    for (int i = 0; i < matches.size(); i++) {
+                        System.out.println((i + 1) + "." + matches.get(i).display());
                     }
                     System.out.println(LINE);
                 }
@@ -234,7 +312,16 @@ public class Aoko {
                         break;
                     }
 
-                    Task task = new Deadline(description, by);
+                        ParsedDateTime parsed = parseDateTime(by);
+                        if (parsed == null) {
+                            System.out.println(LINE);
+                            System.out.println("I couldn't understand that date/time.");
+                            System.out.println("Try: yyyy-MM-dd (e.g., 2019-10-15) or d/M/yyyy HHmm (e.g., 2/12/2019 1800)");
+                            System.out.println(LINE);
+                            break;
+                        }
+
+                        Task task = new Deadline(description, parsed.dateTime, parsed.hasTime);
                     tasks.add(task);
                     saveTasksSafely(SAVE_PATH, tasks);
                     printTaskAdded(task, tasks.size());
@@ -259,7 +346,32 @@ public class Aoko {
                         break;
                     }
 
-                    Task task = new Event(description, from, to);
+                    ParsedDateTime fromParsed = parseDateTime(from);
+                    if (fromParsed == null) {
+                        System.out.println(LINE);
+                        System.out.println("I couldn't understand the event start date/time.");
+                        System.out.println("Try: yyyy-MM-dd (e.g., 2019-10-15) or d/M/yyyy HHmm (e.g., 2/12/2019 1800)");
+                        System.out.println(LINE);
+                        break;
+                    }
+
+                    ParsedDateTime toParsed = parseEventEnd(fromParsed, to);
+                    if (toParsed == null) {
+                        System.out.println(LINE);
+                        System.out.println("I couldn't understand the event end date/time.");
+                        System.out.println("Try: yyyy-MM-dd (e.g., 2019-10-15), d/M/yyyy HHmm (e.g., 2/12/2019 1800), or time-only HHmm/HH:mm (e.g., 1600)");
+                        System.out.println(LINE);
+                        break;
+                    }
+
+                    if (toParsed.dateTime.isBefore(fromParsed.dateTime)) {
+                        System.out.println(LINE);
+                        System.out.println("The event end must not be before the start.");
+                        System.out.println(LINE);
+                        break;
+                    }
+
+                    Task task = new Event(description, fromParsed.dateTime, fromParsed.hasTime, toParsed.dateTime, toParsed.hasTime);
                     tasks.add(task);
                     saveTasksSafely(SAVE_PATH, tasks);
                     printTaskAdded(task, tasks.size());
@@ -268,7 +380,7 @@ public class Aoko {
                 case UNKNOWN -> {
                     System.out.println(LINE);
                     System.out.println("That's not a command I recognize.");
-                    System.out.println("Available commands: list, mark, unmark, delete, todo, deadline, event, bye");
+                    System.out.println("Available commands: list, mark, unmark, delete, todo, deadline, event, on, bye");
                     System.out.println(LINE);
                 }
                 }
@@ -320,10 +432,19 @@ public class Aoko {
             return "T | " + doneFlag + " | " + task.description;
         }
         if (task instanceof Deadline deadline) {
-            return "D | " + doneFlag + " | " + deadline.description + " | " + deadline.by;
+            String encodedBy = deadline.hasTime
+                    ? deadline.by.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                    : deadline.by.toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
+            return "D | " + doneFlag + " | " + deadline.description + " | " + encodedBy;
         }
         if (task instanceof Event event) {
-            return "E | " + doneFlag + " | " + event.description + " | " + event.from + " | " + event.to;
+            String encodedFrom = event.fromHasTime
+                ? event.from.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                : event.from.toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
+            String encodedTo = event.toHasTime
+                ? event.to.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                : event.to.toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
+            return "E | " + doneFlag + " | " + event.description + " | " + encodedFrom + " | " + encodedTo;
         }
 
         return "T | " + doneFlag + " | " + task.description;
@@ -377,13 +498,43 @@ public class Aoko {
                     if (parts.length < 4) {
                         return null;
                     }
-                    task = new Deadline(parts[2], parts[3]);
+                    String byRaw = parts[3].trim();
+                    ParsedDateTime parsed;
+                    if (byRaw.contains("T")) {
+                        try {
+                            parsed = new ParsedDateTime(LocalDateTime.parse(byRaw, DateTimeFormatter.ISO_LOCAL_DATE_TIME), true);
+                        } catch (DateTimeParseException e) {
+                            return null;
+                        }
+                    } else {
+                        try {
+                            LocalDate date = LocalDate.parse(byRaw, DateTimeFormatter.ISO_LOCAL_DATE);
+                            parsed = new ParsedDateTime(date.atStartOfDay(), false);
+                        } catch (DateTimeParseException e) {
+                            return null;
+                        }
+                    }
+
+                    task = new Deadline(parts[2], parsed.dateTime, parsed.hasTime);
                 }
                 case "E" -> {
                     if (parts.length < 5) {
                         return null;
                     }
-                    task = new Event(parts[2], parts[3], parts[4]);
+                    ParsedDateTime fromParsed;
+                    ParsedDateTime toParsed;
+
+                    String fromRaw = parts[3].trim();
+                    String toRaw = parts[4].trim();
+
+                    fromParsed = parseIsoDateOrDateTime(fromRaw);
+                    toParsed = parseIsoDateOrDateTime(toRaw);
+
+                    if (fromParsed == null || toParsed == null) {
+                        return null;
+                    }
+
+                    task = new Event(parts[2], fromParsed.dateTime, fromParsed.hasTime, toParsed.dateTime, toParsed.hasTime);
                 }
                 default -> {
                     return null;
@@ -409,5 +560,136 @@ public class Aoko {
         } catch (NumberFormatException e) {
             return null;
         }
+    }
+
+    private static class ParsedDateTime {
+        private final LocalDateTime dateTime;
+        private final boolean hasTime;
+
+        private ParsedDateTime(LocalDateTime dateTime, boolean hasTime) {
+            this.dateTime = dateTime;
+            this.hasTime = hasTime;
+        }
+    }
+
+    private static ParsedDateTime parseDateTime(String raw) {
+        String s = raw == null ? "" : raw.trim();
+        if (s.isEmpty()) {
+            return null;
+        }
+
+        // Minimal: yyyy-MM-dd
+        try {
+            LocalDate date = LocalDate.parse(s, DateTimeFormatter.ISO_LOCAL_DATE);
+            return new ParsedDateTime(date.atStartOfDay(), false);
+        } catch (DateTimeParseException ignored) {
+            // fall through
+        }
+
+        // Accept: yyyy-MM-dd HHmm or yyyy-MM-dd HH:mm
+        try {
+            DateTimeFormatter f1 = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
+            return new ParsedDateTime(LocalDateTime.parse(s, f1), true);
+        } catch (DateTimeParseException ignored) {
+            // fall through
+        }
+        try {
+            DateTimeFormatter f2 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            return new ParsedDateTime(LocalDateTime.parse(s, f2), true);
+        } catch (DateTimeParseException ignored) {
+            // fall through
+        }
+
+        // Stretch-friendly: d/M/yyyy HHmm (e.g., 2/12/2019 1800)
+        try {
+            DateTimeFormatter f3 = DateTimeFormatter.ofPattern("d/M/yyyy HHmm");
+            return new ParsedDateTime(LocalDateTime.parse(s, f3), true);
+        } catch (DateTimeParseException ignored) {
+            // fall through
+        }
+
+        // Stretch-friendly: d/M/yyyy (date-only)
+        try {
+            DateTimeFormatter f4 = DateTimeFormatter.ofPattern("d/M/yyyy");
+            LocalDate date = LocalDate.parse(s, f4);
+            return new ParsedDateTime(date.atStartOfDay(), false);
+        } catch (DateTimeParseException ignored) {
+            // fall through
+        }
+
+        return null;
+    }
+
+    private static ParsedDateTime parseIsoDateOrDateTime(String raw) {
+        String s = raw == null ? "" : raw.trim();
+        if (s.isEmpty()) {
+            return null;
+        }
+
+        if (s.contains("T")) {
+            try {
+                return new ParsedDateTime(LocalDateTime.parse(s, DateTimeFormatter.ISO_LOCAL_DATE_TIME), true);
+            } catch (DateTimeParseException e) {
+                return null;
+            }
+        }
+
+        try {
+            LocalDate date = LocalDate.parse(s, DateTimeFormatter.ISO_LOCAL_DATE);
+            return new ParsedDateTime(date.atStartOfDay(), false);
+        } catch (DateTimeParseException e) {
+            return null;
+        }
+    }
+
+    private static ParsedDateTime parseEventEnd(ParsedDateTime fromParsed, String rawTo) {
+        ParsedDateTime full = parseDateTime(rawTo);
+        if (full != null) {
+            return full;
+        }
+
+        // Time-only end (same date as start): HHmm or HH:mm
+        String s = rawTo == null ? "" : rawTo.trim();
+        if (s.isEmpty()) {
+            return null;
+        }
+
+        LocalTime time;
+        try {
+            DateTimeFormatter hhmm = DateTimeFormatter.ofPattern("HHmm");
+            time = LocalTime.parse(s, hhmm);
+        } catch (DateTimeParseException ignored) {
+            try {
+                DateTimeFormatter hhColon = DateTimeFormatter.ofPattern("H:mm");
+                time = LocalTime.parse(s, hhColon);
+            } catch (DateTimeParseException ignored2) {
+                return null;
+            }
+        }
+
+        LocalDate date = fromParsed.dateTime.toLocalDate();
+        return new ParsedDateTime(LocalDateTime.of(date, time), true);
+    }
+
+    private static LocalDate parseDateOnly(String raw) {
+        String s = raw == null ? "" : raw.trim();
+        if (s.isEmpty()) {
+            return null;
+        }
+
+        try {
+            return LocalDate.parse(s, DateTimeFormatter.ISO_LOCAL_DATE);
+        } catch (DateTimeParseException ignored) {
+            // fall through
+        }
+
+        try {
+            DateTimeFormatter f = DateTimeFormatter.ofPattern("d/M/yyyy");
+            return LocalDate.parse(s, f);
+        } catch (DateTimeParseException ignored) {
+            // fall through
+        }
+
+        return null;
     }
 }
