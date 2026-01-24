@@ -8,7 +8,7 @@ import java.time.format.DateTimeParseException;
 
 public class Parser {
     public enum Command {
-        LIST, MARK, UNMARK, DELETE, TODO, DEADLINE, EVENT, ON, BYE, UNKNOWN;
+        LIST, MARK, UNMARK, DELETE, TODO, DEADLINE, EVENT, ON, FIND, BYE, UNKNOWN;
 
         static Command parse(String token) {
             if (token == null) {
@@ -23,6 +23,7 @@ public class Parser {
                 case "deadline" -> DEADLINE;
                 case "event" -> EVENT;
                 case "on" -> ON;
+                case "find" -> FIND;
                 case "bye" -> BYE;
                 default -> UNKNOWN;
             };

@@ -5,6 +5,7 @@ D:\cs2103t\ip\src\main\java\aoko\command\CommandFactory.java
 D:\cs2103t\ip\src\main\java\aoko\command\DeadlineCommand.java
 D:\cs2103t\ip\src\main\java\aoko\command\DeleteCommand.java
 D:\cs2103t\ip\src\main\java\aoko\command\EventCommand.java
+D:\cs2103t\ip\src\main\java\aoko\command\FindCommand.java
 D:\cs2103t\ip\src\main\java\aoko\command\ListCommand.java
 D:\cs2103t\ip\src\main\java\aoko\command\MarkCommand.java
 D:\cs2103t\ip\src\main\java\aoko\command\OnCommand.java

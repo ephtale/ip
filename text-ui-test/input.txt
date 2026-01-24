@@ -8,6 +8,7 @@ todo join sports club
 mark 4
 todo borrow book
 list
+find book
 event project meeting /from 2019-06-06 1400 /to 1600
 on 2019-06-06
 on 2019-06-07

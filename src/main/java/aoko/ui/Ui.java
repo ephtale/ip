@@ -82,10 +82,25 @@ public class Ui {
         showLine();
     }
 
+    public void showFind(List<Task> matches) {
+        showLine();
+        if (matches.isEmpty()) {
+            System.out.println("No matching tasks found.");
+            showLine();
+            return;
+        }
+
+        System.out.println("Here are the matching tasks in your list:");
+        for (int i = 0; i < matches.size(); i++) {
+            System.out.println((i + 1) + "." + matches.get(i).display());
+        }
+        showLine();
+    }
+
     public void showUnknownCommand() {
         showLine();
         System.out.println("That's not a command I recognize.");
-        System.out.println("Available commands: list, mark, unmark, delete, todo, deadline, event, on, bye");
+        System.out.println("Available commands: list, mark, unmark, delete, todo, deadline, event, on, find, bye");
         showLine();
     }
 
