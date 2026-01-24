@@ -6,3 +6,5 @@
 
 ## Week 3
 - Date & Time refactoring + "on" command (Level-8)
+- Add JavaDoc and JUnit tests (A-JavaDoc, A-JUnit)
+- Find command (Level-9)
