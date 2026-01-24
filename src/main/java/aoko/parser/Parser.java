@@ -7,6 +7,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 public class Parser {
+    /**
+     * Supported top-level command words.
+     */
     public enum Command {
         LIST, MARK, UNMARK, DELETE, TODO, DEADLINE, EVENT, ON, BYE, UNKNOWN;
 
@@ -29,6 +32,9 @@ public class Parser {
         }
     }
 
+    /**
+     * Represents a parsed user command, including the command word and remainder.
+     */
     public static class ParsedCommand {
         public final Command command;
         public final String[] parts;
@@ -41,6 +47,9 @@ public class Parser {
         }
     }
 
+    /**
+     * Represents a parsed date/time and whether the original input included a time component.
+     */
     public static class ParsedDateTime {
         public final LocalDateTime dateTime;
         public final boolean hasTime;
@@ -51,6 +60,9 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses a raw input line into a command word and remainder.
+     */
     public static ParsedCommand parseCommand(String userInput) {
         String[] parts = userInput.trim().split("\\s+", 2);
         Command command = Command.parse(parts[0]);
@@ -58,6 +70,11 @@ public class Parser {
         return new ParsedCommand(command, parts, remainder);
     }
 
+    /**
+     * Parses a 1-based task index from a tokenized command.
+     *
+     * @return Parsed index, or {@code null} if invalid.
+     */
     public static Integer parseIndex(String[] parts) {
         if (parts.length < 2) {
             return null;
@@ -69,6 +86,11 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses a date/time string into a {@link ParsedDateTime}.
+     *
+     * <p>Accepts date-only and date-time formats used by the chatbot.
+     */
     public static ParsedDateTime parseDateTime(String raw) {
         String s = raw == null ? "" : raw.trim();
         if (s.isEmpty()) {
@@ -113,6 +135,11 @@ public class Parser {
         return null;
     }
 
+    /**
+     * Parses a date-only string.
+     *
+     * @return Parsed date, or {@code null} if invalid.
+     */
     public static LocalDate parseDateOnly(String raw) {
         String s = raw == null ? "" : raw.trim();
         if (s.isEmpty()) {
@@ -135,6 +162,9 @@ public class Parser {
         return null;
     }
 
+    /**
+     * Parses an ISO date or ISO date-time used in persisted storage.
+     */
     public static ParsedDateTime parseIsoDateOrDateTime(String raw) {
         String s = raw == null ? "" : raw.trim();
         if (s.isEmpty()) {
@@ -157,6 +187,11 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses the end of an event.
+     *
+     * <p>Supports full date/time or time-only end (time-only uses the start date).
+     */
     public static ParsedDateTime parseEventEnd(ParsedDateTime fromParsed, String rawTo) {
         ParsedDateTime full = parseDateTime(rawTo);
         if (full != null) {

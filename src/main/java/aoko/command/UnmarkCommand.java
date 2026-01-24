@@ -6,9 +6,17 @@ import aoko.task.Task;
 import aoko.task.TaskList;
 import aoko.ui.Ui;
 
+/**
+ * Marks a task as not done by its 1-based index.
+ */
 public class UnmarkCommand implements AokoCommand {
     private final String[] parts;
 
+    /**
+     * Creates an unmark command.
+     *
+     * @param parts Tokenized user input (command and arguments).
+     */
     public UnmarkCommand(String[] parts) {
         this.parts = parts;
     }

@@ -12,9 +12,17 @@ import aoko.task.Task;
 import aoko.task.TaskList;
 import aoko.ui.Ui;
 
+/**
+ * Lists deadline/event tasks that occur on a specified date.
+ */
 public class OnCommand implements AokoCommand {
     private final String remainder;
 
+    /**
+     * Creates an on command.
+     *
+     * @param remainder User input after the command word.
+     */
     public OnCommand(String remainder) {
         this.remainder = remainder == null ? "" : remainder;
     }

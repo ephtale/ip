@@ -13,6 +13,15 @@ public class Event extends Task {
     private final boolean fromHasTime;
     private final boolean toHasTime;
 
+    /**
+     * Creates an event task.
+     *
+     * @param description Task description.
+     * @param from Start date/time.
+     * @param fromHasTime Whether the start includes a time.
+     * @param to End date/time.
+     * @param toHasTime Whether the end includes a time.
+     */
     public Event(String description, LocalDateTime from, boolean fromHasTime, LocalDateTime to, boolean toHasTime) {
         super(description);
         this.from = from;
@@ -21,18 +30,30 @@ public class Event extends Task {
         this.toHasTime = toHasTime;
     }
 
+    /**
+     * Returns the event start date/time.
+     */
     public LocalDateTime getFrom() {
         return from;
     }
 
+    /**
+     * Returns the event end date/time.
+     */
     public LocalDateTime getTo() {
         return to;
     }
 
+    /**
+     * Returns whether the start includes a time component.
+     */
     public boolean fromHasTime() {
         return fromHasTime;
     }
 
+    /**
+     * Returns whether the end includes a time component.
+     */
     public boolean toHasTime() {
         return toHasTime;
     }

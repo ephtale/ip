@@ -6,9 +6,17 @@ import aoko.task.TaskList;
 import aoko.task.Todo;
 import aoko.ui.Ui;
 
+/**
+ * Adds a todo task.
+ */
 public class TodoCommand implements AokoCommand {
     private final String remainder;
 
+    /**
+     * Creates a todo command.
+     *
+     * @param remainder User input after the command word.
+     */
     public TodoCommand(String remainder) {
         this.remainder = remainder == null ? "" : remainder;
     }

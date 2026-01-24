@@ -7,9 +7,17 @@ import aoko.task.Task;
 import aoko.task.TaskList;
 import aoko.ui.Ui;
 
+/**
+ * Adds an event task with a start and end date/time.
+ */
 public class EventCommand implements AokoCommand {
     private final String remainder;
 
+    /**
+     * Creates an event command.
+     *
+     * @param remainder User input after the command word.
+     */
     public EventCommand(String remainder) {
         this.remainder = remainder == null ? "" : remainder;
     }

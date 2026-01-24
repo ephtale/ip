@@ -7,9 +7,17 @@ import aoko.task.Task;
 import aoko.task.TaskList;
 import aoko.ui.Ui;
 
+/**
+ * Adds a deadline task with a parsed date/time.
+ */
 public class DeadlineCommand implements AokoCommand {
     private final String remainder;
 
+    /**
+     * Creates a deadline command.
+     *
+     * @param remainder User input after the command word.
+     */
     public DeadlineCommand(String remainder) {
         this.remainder = remainder == null ? "" : remainder;
     }

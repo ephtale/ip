@@ -19,13 +19,24 @@ import aoko.task.Task;
 import aoko.task.TaskList;
 import aoko.task.Todo;
 
+/**
+ * Loads and saves tasks to disk using a simple line-based text format.
+ */
 public class Storage {
     private final Path path;
 
+    /**
+     * Creates storage backed by a given file path.
+     */
     public Storage(Path path) {
         this.path = path;
     }
 
+    /**
+     * Loads tasks from disk.
+     *
+     * <p>If the file does not exist or cannot be read, returns an empty list.
+     */
     public List<Task> load() {
         if (!Files.exists(path)) {
             return new ArrayList<>();
@@ -47,6 +58,9 @@ public class Storage {
         }
     }
 
+    /**
+     * Saves the given task list to disk.
+     */
     public void save(TaskList taskList) {
         try {
             saveInternal(taskList.asUnmodifiableList());
@@ -55,6 +69,9 @@ public class Storage {
         }
     }
 
+    /**
+     * Writes tasks to disk, creating parent directories if needed.
+     */
     private void saveInternal(List<Task> tasks) throws IOException {
         Path parent = path.getParent();
         if (parent != null) {
@@ -68,6 +85,9 @@ public class Storage {
         Files.write(path, lines, StandardCharsets.UTF_8);
     }
 
+    /**
+     * Encodes a task into its persisted line representation.
+     */
     private static String encodeTask(Task task) {
         String doneFlag = task.isDone() ? "1" : "0";
 
@@ -93,6 +113,11 @@ public class Storage {
         return "T | " + doneFlag + " | " + task.getDescription();
     }
 
+    /**
+     * Decodes a persisted line into a task.
+     *
+     * <p>Returns {@code null} for corrupted/unsupported lines.
+     */
     private static Task decodeTask(String line) {
         if (line == null) {
             return null;
@@ -152,6 +177,9 @@ public class Storage {
         }
     }
 
+    /**
+     * Parses legacy (date-only) or ISO date-time strings used for deadlines in storage.
+     */
     private static Parser.ParsedDateTime parseLegacyOrIso(String byRaw) {
         // Supports ISO date or ISO date-time (current format)
         if (byRaw.contains("T")) {
