@@ -12,3 +12,4 @@
 - Thoughts: Manually writings Javadocs is a PITA (especially for >600 LoC) so using AI for this probably saved somewhere between 80 and 90 minutes on that alone, and LLMs do that way too well. Unit tests seem pretty solid, not fully robust but I don't really need it to be too robust.
 
 ## Week 4
+- Updated README.md and CONTRIBUTORS.md

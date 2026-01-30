@@ -1,4 +1,15 @@
 # Contributors
 
-Me
-SE-Edu guides (for almost everything, especially UI, I just mostly copied from them)
+## Project authors
+
+- me
+
+## Acknowledgements / attributions
+
+- SE-EDU Duke guides/tutorials (UI patterns, JavaFX/FXML structure inspiration)
+
+## Tools and libraries
+
+- JavaFX (OpenJFX)
+- Gradle + ShadowJar plugin
+- JUnit 5
