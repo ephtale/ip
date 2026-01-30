@@ -13,7 +13,9 @@ import aoko.task.TaskList;
  */
 public class Ui {
     private static final String LINE = "____________________________________________________________";
-    private static final DateTimeFormatter DISPLAY_DATE_ONLY = DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.ENGLISH);
+    private static final DateTimeFormatter DISPLAY_DATE_ONLY = DateTimeFormatter.ofPattern(
+            "MMM dd yyyy",
+            Locale.ENGLISH);
 
     /**
      * Prints the divider line.
@@ -112,6 +114,9 @@ public class Ui {
         showLine();
     }
 
+    /**
+     * Prints tasks that match a given keyword.
+     */
     public void showFind(List<Task> matches) {
         showLine();
         if (matches.isEmpty()) {

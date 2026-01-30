@@ -1,13 +1,12 @@
 package aoko.parser;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 import org.junit.jupiter.api.Test;
 
 public class ParserTest {
@@ -19,7 +18,7 @@ public class ParserTest {
     }
 
     @Test
-    void parseDateTime_acceptsIsoDate_dateOnly_setsStartOfDayAndHasTimeFalse() {
+    void parseDateTime_acceptsIsoDate_dateOnly() {
         Parser.ParsedDateTime parsed = Parser.parseDateTime("2019-06-06");
         assertNotNull(parsed);
         assertEquals(LocalDateTime.of(2019, 6, 6, 0, 0), parsed.dateTime);
