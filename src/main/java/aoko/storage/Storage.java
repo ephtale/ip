@@ -135,36 +135,41 @@ public class Storage {
 
             Task task;
             switch (type) {
-                case "T" -> {
-                    if (parts.length < 3) {
-                        return null;
-                    }
-                    task = new Todo(parts[2]);
-                }
-                case "D" -> {
-                    if (parts.length < 4) {
-                        return null;
-                    }
-                    Parser.ParsedDateTime parsed = parseLegacyOrIso(parts[3].trim());
-                    if (parsed == null) {
-                        return null;
-                    }
-                    task = new Deadline(parts[2], parsed.dateTime, parsed.hasTime);
-                }
-                case "E" -> {
-                    if (parts.length < 5) {
-                        return null;
-                    }
-                    Parser.ParsedDateTime fromParsed = Parser.parseIsoDateOrDateTime(parts[3].trim());
-                    Parser.ParsedDateTime toParsed = Parser.parseIsoDateOrDateTime(parts[4].trim());
-                    if (fromParsed == null || toParsed == null) {
-                        return null;
-                    }
-                    task = new Event(parts[2], fromParsed.dateTime, fromParsed.hasTime, toParsed.dateTime, toParsed.hasTime);
-                }
-                default -> {
+            case "T" -> {
+                if (parts.length < 3) {
                     return null;
                 }
+                task = new Todo(parts[2]);
+            }
+            case "D" -> {
+                if (parts.length < 4) {
+                    return null;
+                }
+                Parser.ParsedDateTime parsed = parseLegacyOrIso(parts[3].trim());
+                if (parsed == null) {
+                    return null;
+                }
+                task = new Deadline(parts[2], parsed.dateTime, parsed.hasTime);
+            }
+            case "E" -> {
+                if (parts.length < 5) {
+                    return null;
+                }
+                Parser.ParsedDateTime fromParsed = Parser.parseIsoDateOrDateTime(parts[3].trim());
+                Parser.ParsedDateTime toParsed = Parser.parseIsoDateOrDateTime(parts[4].trim());
+                if (fromParsed == null || toParsed == null) {
+                    return null;
+                }
+                task = new Event(
+                        parts[2],
+                        fromParsed.dateTime,
+                        fromParsed.hasTime,
+                        toParsed.dateTime,
+                        toParsed.hasTime);
+            }
+            default -> {
+                return null;
+            }
             }
 
             if (isDone) {
@@ -184,7 +189,9 @@ public class Storage {
         // Supports ISO date or ISO date-time (current format)
         if (byRaw.contains("T")) {
             try {
-                return new Parser.ParsedDateTime(LocalDateTime.parse(byRaw, DateTimeFormatter.ISO_LOCAL_DATE_TIME), true);
+                return new Parser.ParsedDateTime(
+                        LocalDateTime.parse(byRaw, DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                        true);
             } catch (DateTimeParseException e) {
                 return null;
             }

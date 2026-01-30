@@ -11,6 +11,9 @@ import aoko.ui.Ui;
  * Adds an event task with a start and end date/time.
  */
 public class EventCommand implements AokoCommand {
+    private static final String EVENT_USAGE = "Please use: event <description> /from <from> /to <to> "
+            + "(e.g., \"event project meeting /from Mon 2pm /to 4pm\").";
+
     private final String remainder;
 
     /**
@@ -27,8 +30,7 @@ public class EventCommand implements AokoCommand {
         int fromIndex = remainder.indexOf("/from");
         int toIndex = remainder.indexOf("/to");
         if (remainder.trim().isEmpty() || fromIndex < 0 || toIndex < 0 || toIndex < fromIndex) {
-            ui.showMessageBlock(
-                    "Please use: event <description> /from <from> /to <to> (e.g., \"event project meeting /from Mon 2pm /to 4pm\").");
+            ui.showMessageBlock(EVENT_USAGE);
             return false;
         }
 
@@ -36,8 +38,7 @@ public class EventCommand implements AokoCommand {
         String from = remainder.substring(fromIndex + 5, toIndex).trim();
         String to = remainder.substring(toIndex + 3).trim();
         if (description.isEmpty() || from.isEmpty() || to.isEmpty()) {
-            ui.showMessageBlock(
-                    "Please use: event <description> /from <from> /to <to> (e.g., \"event project meeting /from Mon 2pm /to 4pm\").");
+            ui.showMessageBlock(EVENT_USAGE);
             return false;
         }
 
@@ -53,7 +54,8 @@ public class EventCommand implements AokoCommand {
         if (toParsed == null) {
             ui.showMessageBlock(
                     "I couldn't understand the event end date/time.",
-                    "Try: yyyy-MM-dd (e.g., 2019-10-15), d/M/yyyy HHmm (e.g., 2/12/2019 1800), or time-only HHmm/HH:mm (e.g., 1600)");
+                    "Try: yyyy-MM-dd (e.g., 2019-10-15), d/M/yyyy HHmm (e.g., 2/12/2019 1800), "
+                            + "or time-only HHmm/HH:mm (e.g., 1600)");
             return false;
         }
 
@@ -62,7 +64,12 @@ public class EventCommand implements AokoCommand {
             return false;
         }
 
-        Task task = new Event(description, fromParsed.dateTime, fromParsed.hasTime, toParsed.dateTime, toParsed.hasTime);
+        Task task = new Event(
+            description,
+            fromParsed.dateTime,
+            fromParsed.hasTime,
+            toParsed.dateTime,
+            toParsed.hasTime);
         tasks.add(task);
         storage.save(tasks);
         ui.showAdded(task, tasks.size());

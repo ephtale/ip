@@ -6,6 +6,9 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+/**
+ * Parses raw user input into command words, arguments, and date/time values.
+ */
 public class Parser {
     /**
      * Supported top-level command words.
@@ -18,17 +21,17 @@ public class Parser {
                 return UNKNOWN;
             }
             return switch (token.toLowerCase()) {
-                case "list" -> LIST;
-                case "mark" -> MARK;
-                case "unmark" -> UNMARK;
-                case "delete" -> DELETE;
-                case "todo" -> TODO;
-                case "deadline" -> DEADLINE;
-                case "event" -> EVENT;
-                case "on" -> ON;
-                case "find" -> FIND;
-                case "bye" -> BYE;
-                default -> UNKNOWN;
+            case "list" -> LIST;
+            case "mark" -> MARK;
+            case "unmark" -> UNMARK;
+            case "delete" -> DELETE;
+            case "todo" -> TODO;
+            case "deadline" -> DEADLINE;
+            case "event" -> EVENT;
+            case "on" -> ON;
+            case "find" -> FIND;
+            case "bye" -> BYE;
+            default -> UNKNOWN;
             };
         }
     }
@@ -41,6 +44,13 @@ public class Parser {
         public final String[] parts;
         public final String remainder;
 
+        /**
+         * Creates a parsed command.
+         *
+         * @param command Command word.
+         * @param parts Tokenized raw input.
+         * @param remainder Remainder after the command word.
+         */
         ParsedCommand(Command command, String[] parts, String remainder) {
             this.command = command;
             this.parts = parts;
@@ -55,6 +65,12 @@ public class Parser {
         public final LocalDateTime dateTime;
         public final boolean hasTime;
 
+        /**
+         * Creates a parsed date/time.
+         *
+         * @param dateTime Parsed date/time value.
+         * @param hasTime Whether the original input included a time component.
+         */
         public ParsedDateTime(LocalDateTime dateTime, boolean hasTime) {
             this.dateTime = dateTime;
             this.hasTime = hasTime;
