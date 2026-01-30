@@ -1,5 +1,6 @@
 package aoko.ui;
 
+import java.io.PrintStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -17,11 +18,27 @@ public class Ui {
             "MMM dd yyyy",
             Locale.ENGLISH);
 
+    private final PrintStream out;
+
+    /**
+     * Creates a UI that writes to standard output.
+     */
+    public Ui() {
+        this(System.out);
+    }
+
+    /**
+     * Creates a UI that writes to the given output stream.
+     */
+    public Ui(PrintStream out) {
+        this.out = out;
+    }
+
     /**
      * Prints the divider line.
      */
     public void showLine() {
-        System.out.println(LINE);
+        out.println(LINE);
     }
 
     /**
@@ -29,7 +46,7 @@ public class Ui {
      */
     public void showWelcome() {
         showLine();
-        System.out.println("Hello! I'm Aoko, your Magecraft assistant.\nHow may I help you today?\n");
+        out.println("Hello! I'm Aoko, your Magecraft assistant.\nHow may I help you today?\n");
         showLine();
     }
 
@@ -38,7 +55,7 @@ public class Ui {
      */
     public void showBye() {
         showLine();
-        System.out.println("See you again soon!\n");
+        out.println("See you again soon!\n");
         showLine();
     }
 
@@ -47,9 +64,9 @@ public class Ui {
      */
     public void showAdded(Task task, int newSize) {
         showLine();
-        System.out.println("Got it. I've added this task:");
-        System.out.println("  " + task.display());
-        System.out.println("Now you have " + newSize + " tasks in the list.");
+        out.println("Got it. I've added this task:");
+        out.println("  " + task.display());
+        out.println("Now you have " + newSize + " tasks in the list.");
         showLine();
     }
 
@@ -58,9 +75,9 @@ public class Ui {
      */
     public void showList(TaskList tasks) {
         showLine();
-        System.out.println("Here are the tasks in your list:");
+        out.println("Here are the tasks in your list:");
         for (int i = 0; i < tasks.size(); i++) {
-            System.out.println((i + 1) + "." + tasks.get(i).display());
+            out.println((i + 1) + "." + tasks.get(i).display());
         }
         showLine();
     }
@@ -70,8 +87,8 @@ public class Ui {
      */
     public void showMarked(Task task) {
         showLine();
-        System.out.println("Nice! I've marked this task as done:");
-        System.out.println("  " + task.display());
+        out.println("Nice! I've marked this task as done:");
+        out.println("  " + task.display());
         showLine();
     }
 
@@ -80,8 +97,8 @@ public class Ui {
      */
     public void showUnmarked(Task task) {
         showLine();
-        System.out.println("OK, I've marked this task as not done yet:");
-        System.out.println("  " + task.display());
+        out.println("OK, I've marked this task as not done yet:");
+        out.println("  " + task.display());
         showLine();
     }
 
@@ -90,9 +107,9 @@ public class Ui {
      */
     public void showDeleted(Task removed, int newSize) {
         showLine();
-        System.out.println("Noted. I've removed this task:");
-        System.out.println("  " + removed.display());
-        System.out.println("Now you have " + newSize + " tasks in the list.");
+        out.println("Noted. I've removed this task:");
+        out.println("  " + removed.display());
+        out.println("Now you have " + newSize + " tasks in the list.");
         showLine();
     }
 
@@ -102,14 +119,14 @@ public class Ui {
     public void showOn(LocalDate date, List<Task> matches) {
         showLine();
         if (matches.isEmpty()) {
-            System.out.println("No tasks found on " + date.format(DISPLAY_DATE_ONLY) + ".");
+            out.println("No tasks found on " + date.format(DISPLAY_DATE_ONLY) + ".");
             showLine();
             return;
         }
 
-        System.out.println("Here are the tasks on " + date.format(DISPLAY_DATE_ONLY) + ":");
+        out.println("Here are the tasks on " + date.format(DISPLAY_DATE_ONLY) + ":");
         for (int i = 0; i < matches.size(); i++) {
-            System.out.println((i + 1) + "." + matches.get(i).display());
+            out.println((i + 1) + "." + matches.get(i).display());
         }
         showLine();
     }
@@ -120,14 +137,14 @@ public class Ui {
     public void showFind(List<Task> matches) {
         showLine();
         if (matches.isEmpty()) {
-            System.out.println("No matching tasks found.");
+            out.println("No matching tasks found.");
             showLine();
             return;
         }
 
-        System.out.println("Here are the matching tasks in your list:");
+        out.println("Here are the matching tasks in your list:");
         for (int i = 0; i < matches.size(); i++) {
-            System.out.println((i + 1) + "." + matches.get(i).display());
+            out.println((i + 1) + "." + matches.get(i).display());
         }
         showLine();
     }
@@ -137,8 +154,8 @@ public class Ui {
      */
     public void showUnknownCommand() {
         showLine();
-        System.out.println("That's not a command I recognize.");
-        System.out.println("Available commands: list, mark, unmark, delete, todo, deadline, event, on, find, bye");
+        out.println("That's not a command I recognize.");
+        out.println("Available commands: list, mark, unmark, delete, todo, deadline, event, on, find, bye");
         showLine();
     }
 
@@ -148,7 +165,7 @@ public class Ui {
     public void showMessageBlock(String... lines) {
         showLine();
         for (String line : lines) {
-            System.out.println(line);
+            out.println(line);
         }
         showLine();
     }

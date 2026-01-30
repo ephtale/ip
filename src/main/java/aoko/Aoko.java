@@ -4,11 +4,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Scanner;
 
-import aoko.command.AokoCommand;
-import aoko.command.CommandFactory;
-import aoko.parser.Parser;
-import aoko.storage.Storage;
-import aoko.task.TaskList;
 import aoko.ui.Ui;
 
 /**
@@ -26,10 +21,9 @@ public class Aoko {
      */
     public static void main(String[] args) {
         Ui ui = new Ui();
-        Storage storage = new Storage(SAVE_PATH);
-        TaskList tasks = new TaskList(storage.load());
+        AokoEngine engine = new AokoEngine(SAVE_PATH);
 
-        ui.showWelcome();
+        engine.showWelcome(ui);
         try (Scanner scanner = new Scanner(System.in)) {
             while (true) {
                 if (!scanner.hasNextLine()) {
@@ -40,24 +34,11 @@ public class Aoko {
                     continue;
                 }
 
-                boolean exit = handleCommand(ui, storage, tasks, userInput);
+                boolean exit = engine.process(userInput, ui);
                 if (exit) {
                     break;
                 }
             }
         }
-
-        ui.showBye();
-    }
-
-    /**
-     * Parses and executes a single user command.
-     *
-     * @return {@code true} if the application should exit.
-     */
-    private static boolean handleCommand(Ui ui, Storage storage, TaskList tasks, String userInput) {
-        Parser.ParsedCommand parsed = Parser.parseCommand(userInput);
-        AokoCommand command = CommandFactory.fromParsed(parsed);
-        return command.execute(ui, storage, tasks);
     }
 }
