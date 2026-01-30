@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     id 'java'
     id 'application'
@@ -14,8 +16,22 @@ repositories {
 }
 
 dependencies {
+    String javaFxVersion = '17.0.7'
+
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.10.0'
     testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.10.0'
+    implementation group: 'org.openjfx', name: 'javafx-base', version: javaFxVersion, classifier: 'win'
+    implementation group: 'org.openjfx', name: 'javafx-base', version: javaFxVersion, classifier: 'mac'
+    implementation group: 'org.openjfx', name: 'javafx-base', version: javaFxVersion, classifier: 'linux'
+    implementation group: 'org.openjfx', name: 'javafx-controls', version: javaFxVersion, classifier: 'win'
+    implementation group: 'org.openjfx', name: 'javafx-controls', version: javaFxVersion, classifier: 'mac'
+    implementation group: 'org.openjfx', name: 'javafx-controls', version: javaFxVersion, classifier: 'linux'
+    implementation group: 'org.openjfx', name: 'javafx-fxml', version: javaFxVersion, classifier: 'win'
+    implementation group: 'org.openjfx', name: 'javafx-fxml', version: javaFxVersion, classifier: 'mac'
+    implementation group: 'org.openjfx', name: 'javafx-fxml', version: javaFxVersion, classifier: 'linux'
+    implementation group: 'org.openjfx', name: 'javafx-graphics', version: javaFxVersion, classifier: 'win'
+    implementation group: 'org.openjfx', name: 'javafx-graphics', version: javaFxVersion, classifier: 'mac'
+    implementation group: 'org.openjfx', name: 'javafx-graphics', version: javaFxVersion, classifier: 'linux'
 }
 
 test {
@@ -36,6 +52,13 @@ application {
     mainClass.set("aoko.Aoko")
 }
 
+tasks.register('runGui', JavaExec) {
+    group = 'application'
+    description = 'Runs the JavaFX GUI (Aoko)'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass.set('aoko.gui.Launcher')
+}
+
 jar {
     manifest {
         attributes(
@@ -51,6 +74,17 @@ shadowJar {
     manifest {
         attributes(
                 'Main-Class': application.mainClass.get()
+        )
+    }
+}
+
+tasks.register('shadowGuiJar', ShadowJar) {
+    archiveBaseName = 'Aoko'
+    archiveClassifier = 'gui'
+
+    manifest {
+        attributes(
+                'Main-Class': 'aoko.gui.Launcher'
         )
     }
 }
