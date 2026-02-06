@@ -70,6 +70,46 @@ public class Storage {
     }
 
     /**
+     * Returns an in-memory snapshot of the given task list in the same encoded format used on disk.
+     *
+     * <p>This is intended for features like undo/redo, where a stable representation is preferred
+     * over object identity.
+     *
+     * @param taskList Task list to snapshot.
+     * @return Encoded task lines.
+     */
+    public List<String> snapshot(TaskList taskList) {
+        assert taskList != null : "taskList must not be null";
+        return taskList.asUnmodifiableList().stream()
+                .map(Storage::encodeTask)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Restores the given task list from a previously created snapshot and persists it to disk.
+     *
+     * <p>Corrupted lines are skipped using the same rules as {@link #load()}.
+     *
+     * @param taskList Task list instance to mutate.
+     * @param snapshotLines Encoded task lines.
+     */
+    public void restore(TaskList taskList, List<String> snapshotLines) {
+        assert taskList != null : "taskList must not be null";
+        assert snapshotLines != null : "snapshotLines must not be null";
+
+        List<Task> decoded = new ArrayList<>();
+        for (String line : snapshotLines) {
+            Task task = decodeTask(line);
+            if (task != null) {
+                decoded.add(task);
+            }
+        }
+
+        taskList.replaceWith(decoded);
+        save(taskList);
+    }
+
+    /**
      * Writes tasks to disk, creating parent directories if needed.
      */
     private void saveInternal(List<Task> tasks) throws IOException {

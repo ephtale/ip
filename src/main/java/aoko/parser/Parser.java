@@ -14,7 +14,7 @@ public class Parser {
      * Supported top-level command words.
      */
     public enum Command {
-        LIST, MARK, UNMARK, DELETE, TODO, DEADLINE, EVENT, ON, FIND, BYE, UNKNOWN;
+        LIST, MARK, UNMARK, DELETE, TODO, DEADLINE, EVENT, ON, FIND, UNDO, BYE, UNKNOWN;
 
         static Command parse(String token) {
             if (token == null) {
@@ -30,6 +30,7 @@ public class Parser {
             case "event" -> EVENT;
             case "on" -> ON;
             case "find" -> FIND;
+            case "undo" -> UNDO;
             case "bye" -> BYE;
             default -> UNKNOWN;
             };

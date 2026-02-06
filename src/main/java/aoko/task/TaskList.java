@@ -58,4 +58,15 @@ public class TaskList {
     public List<Task> asUnmodifiableList() {
         return Collections.unmodifiableList(tasks);
     }
+
+    /**
+     * Replaces the current contents with the given tasks.
+     *
+     * @param newTasks Tasks to replace with.
+     */
+    public void replaceWith(List<Task> newTasks) {
+        assert newTasks != null : "newTasks must not be null";
+        tasks.clear();
+        tasks.addAll(newTasks);
+    }
 }

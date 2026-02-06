@@ -6,6 +6,14 @@ Aoko is a simple task-tracking chatbot with:
 - A **CLI** (terminal) mode
 - A **JavaFX GUI** mode
 
+## Commands
+
+- `todo <description>`
+- `deadline <description> /by <date>`
+- `event <description> /from <start> /to <end>`
+- `list`, `mark <n>`, `unmark <n>`, `delete <n>`, `find <keyword>`, `on <date>`, `bye`
+- `undo` (undoes the most recent successful change)
+
 ## Requirements
 
 - **Java 17** (recommended: Temurin/OpenJDK 17)

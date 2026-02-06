@@ -155,8 +155,22 @@ public class Ui {
     public void showUnknownCommand() {
         showLine();
         out.println("That's not a command I recognize.");
-        out.println("Available commands: list, mark, unmark, delete, todo, deadline, event, on, find, bye");
+        out.println("Available commands: list, mark, unmark, delete, todo, deadline, event, on, find, undo, bye");
         showLine();
+    }
+
+    /**
+     * Prints a message when there is nothing to undo.
+     */
+    public void showUndoEmpty() {
+        showMessageBlock("Nothing to undo.");
+    }
+
+    /**
+     * Prints a message after successfully undoing the most recent change.
+     */
+    public void showUndoSuccess() {
+        showMessageBlock("Undid the most recent change.");
     }
 
     /**
