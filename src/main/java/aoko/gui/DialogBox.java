@@ -25,6 +25,8 @@ public class DialogBox extends HBox {
     private ImageView displayPicture;
 
     private DialogBox(String text, Image img) {
+        assert text != null : "Dialog text must not be null";
+        assert img != null : "Dialog image must not be null";
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(DialogBox.class.getResource("/view/DialogBox.fxml"));
             fxmlLoader.setController(this);
@@ -34,6 +36,9 @@ public class DialogBox extends HBox {
             throw new IllegalStateException("Failed to load dialog box layout", e);
         }
 
+        assert dialog != null : "FXML dialog label must be injected";
+        assert displayPicture != null : "FXML image view must be injected";
+
         dialog.setText(text);
         displayPicture.setImage(img);
     }
@@ -42,7 +47,9 @@ public class DialogBox extends HBox {
      * Flips the dialog box such that the ImageView is on the left and text on the right.
      */
     private void flip() {
+        assert dialog != null : "Dialog label must be initialized";
         ObservableList<Node> tmp = FXCollections.observableArrayList(this.getChildren());
+        assert tmp != null : "Children list must not be null";
         Collections.reverse(tmp);
         getChildren().setAll(tmp);
         setAlignment(Pos.TOP_LEFT);

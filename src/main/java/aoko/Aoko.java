@@ -8,8 +8,6 @@ import aoko.ui.Ui;
 
 /**
  * Entry point for the Aoko chatbot application.
- *
- * <p>Wires together the UI, storage, and task list, then runs the main input loop.
  */
 public class Aoko {
     private static final Path SAVE_PATH = Paths.get("data", "aoko.txt");
@@ -20,16 +18,23 @@ public class Aoko {
      * @param args Command-line arguments (unused).
      */
     public static void main(String[] args) {
+        assert SAVE_PATH != null : "Save path must be initialized";
         Ui ui = new Ui();
         AokoEngine engine = new AokoEngine(SAVE_PATH);
 
+        assert ui != null : "UI should be constructed";
+        assert engine != null : "Engine should be constructed";
+
         engine.showWelcome(ui);
         try (Scanner scanner = new Scanner(System.in)) {
+            assert scanner != null : "Scanner should be constructed";
             while (true) {
                 if (!scanner.hasNextLine()) {
                     break; // EOF
                 }
+
                 String userInput = scanner.nextLine().trim();
+                assert userInput != null : "Scanner.nextLine() should not return null";
                 if (userInput.isEmpty()) {
                     continue;
                 }

@@ -10,9 +10,6 @@ import java.time.format.DateTimeParseException;
  * Parses raw user input into command words, arguments, and date/time values.
  */
 public class Parser {
-    /**
-     * Supported top-level command words.
-     */
     public enum Command {
         LIST, MARK, UNMARK, DELETE, TODO, DEADLINE, EVENT, ON, FIND, BYE, UNKNOWN;
 
@@ -81,9 +78,13 @@ public class Parser {
      * Parses a raw input line into a command word and remainder.
      */
     public static ParsedCommand parseCommand(String userInput) {
+        assert userInput != null : "User input must not be null";
         String[] parts = userInput.trim().split("\\s+", 2);
+        assert parts.length >= 1 : "Split should always return at least one token";
         Command command = Command.parse(parts[0]);
+        assert command != null : "Command.parse must not return null";
         String remainder = parts.length > 1 ? parts[1].trim() : "";
+        assert remainder != null : "Remainder must not be null";
         return new ParsedCommand(command, parts, remainder);
     }
 
@@ -93,6 +94,7 @@ public class Parser {
      * @return Parsed index, or {@code null} if invalid.
      */
     public static Integer parseIndex(String[] parts) {
+        assert parts != null : "Tokenized parts must not be null";
         if (parts.length < 2) {
             return null;
         }
@@ -105,8 +107,6 @@ public class Parser {
 
     /**
      * Parses a date/time string into a {@link ParsedDateTime}.
-     *
-     * <p>Accepts date-only and date-time formats used by the chatbot.
      */
     public static ParsedDateTime parseDateTime(String raw) {
         String s = raw == null ? "" : raw.trim();
@@ -206,10 +206,10 @@ public class Parser {
 
     /**
      * Parses the end of an event.
-     *
-     * <p>Supports full date/time or time-only end (time-only uses the start date).
      */
     public static ParsedDateTime parseEventEnd(ParsedDateTime fromParsed, String rawTo) {
+        assert fromParsed != null : "Event start must be parsed before parsing an end";
+        assert fromParsed.dateTime != null : "Parsed start date/time must not be null";
         ParsedDateTime full = parseDateTime(rawTo);
         if (full != null) {
             return full;

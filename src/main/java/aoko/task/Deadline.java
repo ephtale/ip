@@ -25,6 +25,7 @@ public class Deadline extends Task {
      */
     public Deadline(String description, LocalDateTime by, boolean hasTime) {
         super(description);
+        assert by != null : "Deadline date/time must not be null";
         this.by = by;
         this.hasTime = hasTime;
     }
@@ -33,6 +34,7 @@ public class Deadline extends Task {
      * Returns the deadline date/time.
      */
     public LocalDateTime getBy() {
+        assert by != null : "Deadline date/time must not be null";
         return by;
     }
 
@@ -50,6 +52,7 @@ public class Deadline extends Task {
 
     @Override
     protected String taskDetails() {
+        assert by != null : "Deadline date/time must not be null";
         String formatted = hasTime ? by.format(DISPLAY_DATE_TIME) : by.toLocalDate().format(DISPLAY_DATE);
         return description + " (by: " + formatted + ")";
     }
