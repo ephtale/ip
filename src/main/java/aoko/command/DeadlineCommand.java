@@ -49,9 +49,7 @@ public class DeadlineCommand implements AokoCommand {
         }
 
         Task task = new Deadline(description, dateTime.dateTime, dateTime.hasTime);
-        tasks.add(task);
-        storage.save(tasks);
-        ui.showAdded(task, tasks.size());
+        CommandValidation.addTaskAndPersist(task, tasks, storage, ui);
         return false;
     }
 }

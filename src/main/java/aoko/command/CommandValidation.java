@@ -1,6 +1,8 @@
 package aoko.command;
 
 import aoko.parser.Parser;
+import aoko.storage.Storage;
+import aoko.task.Task;
 import aoko.task.TaskList;
 import aoko.ui.Ui;
 
@@ -24,5 +26,11 @@ final class CommandValidation {
             return null;
         }
         return index;
+    }
+
+    static void addTaskAndPersist(Task task, TaskList tasks, Storage storage, Ui ui) {
+        tasks.add(task);
+        storage.save(tasks);
+        ui.showAdded(task, tasks.size());
     }
 }

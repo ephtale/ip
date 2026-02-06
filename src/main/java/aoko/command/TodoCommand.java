@@ -10,6 +10,9 @@ import aoko.ui.Ui;
  * Adds a todo task.
  */
 public class TodoCommand implements AokoCommand {
+    private static final String EMPTY_DESCRIPTION_MESSAGE =
+            "Please provide a description for a todo (e.g., \"todo borrow book\").";
+
     private final String remainder;
 
     /**
@@ -23,15 +26,14 @@ public class TodoCommand implements AokoCommand {
 
     @Override
     public boolean execute(Ui ui, Storage storage, TaskList tasks) {
-        if (remainder.trim().isEmpty()) {
-            ui.showMessageBlock("Please provide a description for a todo (e.g., \"todo borrow book\").");
+        String description = remainder.trim();
+        if (description.isEmpty()) {
+            ui.showMessageBlock(EMPTY_DESCRIPTION_MESSAGE);
             return false;
         }
 
-        Task task = new Todo(remainder.trim());
-        tasks.add(task);
-        storage.save(tasks);
-        ui.showAdded(task, tasks.size());
+        Task task = new Todo(description);
+        CommandValidation.addTaskAndPersist(task, tasks, storage, ui);
         return false;
     }
 }

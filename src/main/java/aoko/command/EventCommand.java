@@ -70,9 +70,7 @@ public class EventCommand implements AokoCommand {
             fromParsed.hasTime,
             toParsed.dateTime,
             toParsed.hasTime);
-        tasks.add(task);
-        storage.save(tasks);
-        ui.showAdded(task, tasks.size());
+        CommandValidation.addTaskAndPersist(task, tasks, storage, ui);
         return false;
     }
 }
