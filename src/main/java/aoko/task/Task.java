@@ -8,6 +8,8 @@ public abstract class Task {
     private boolean isDone;
 
     Task(String description) {
+        assert description != null : "Task description must not be null";
+        assert !description.trim().isEmpty() : "Task description must not be blank";
         this.description = description;
         this.isDone = false;
     }
@@ -37,6 +39,7 @@ public abstract class Task {
      * Returns the raw task description.
      */
     public String getDescription() {
+        assert description != null : "Task description must not be null";
         return description;
     }
 
@@ -54,6 +57,7 @@ public abstract class Task {
      * Returns the formatted representation shown to the user.
      */
     public String display() {
+        assert typeIcon() != null : "Task type icon must not be null";
         return typeIcon() + statusIcon() + " " + taskDetails();
     }
 }

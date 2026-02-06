@@ -23,10 +23,16 @@ public class DeadlineCommand implements AokoCommand {
      */
     public DeadlineCommand(String remainder) {
         this.remainder = remainder == null ? "" : remainder;
+        assert this.remainder != null : "Remainder must not be null";
     }
 
     @Override
     public boolean execute(Ui ui, Storage storage, TaskList tasks) {
+        assert ui != null : "UI must not be null";
+        assert storage != null : "Storage must not be null";
+        assert tasks != null : "Task list must not be null";
+        assert remainder != null : "Remainder must not be null";
+
         int byIndex = remainder.indexOf("/by");
         if (remainder.trim().isEmpty() || byIndex < 0) {
             ui.showMessageBlock(DEADLINE_USAGE);
@@ -48,8 +54,13 @@ public class DeadlineCommand implements AokoCommand {
             return false;
         }
 
+        assert dateTime.dateTime != null : "Parsed deadline date/time must not be null";
+
         Task task = new Deadline(description, dateTime.dateTime, dateTime.hasTime);
-        CommandValidation.addTaskAndPersist(task, tasks, storage, ui);
+        assert task != null : "Constructed task must not be null";
+        tasks.add(task);
+        storage.save(tasks);
+        ui.showAdded(task, tasks.size());
         return false;
     }
 }

@@ -23,10 +23,16 @@ public class EventCommand implements AokoCommand {
      */
     public EventCommand(String remainder) {
         this.remainder = remainder == null ? "" : remainder;
+        assert this.remainder != null : "Remainder must not be null";
     }
 
     @Override
     public boolean execute(Ui ui, Storage storage, TaskList tasks) {
+        assert ui != null : "UI must not be null";
+        assert storage != null : "Storage must not be null";
+        assert tasks != null : "Task list must not be null";
+        assert remainder != null : "Remainder must not be null";
+
         int fromIndex = remainder.indexOf("/from");
         int toIndex = remainder.indexOf("/to");
         if (remainder.trim().isEmpty() || fromIndex < 0 || toIndex < 0 || toIndex < fromIndex) {
@@ -50,6 +56,8 @@ public class EventCommand implements AokoCommand {
             return false;
         }
 
+        assert fromParsed.dateTime != null : "Parsed event start date/time must not be null";
+
         Parser.ParsedDateTime toParsed = Parser.parseEventEnd(fromParsed, to);
         if (toParsed == null) {
             ui.showMessageBlock(
@@ -59,10 +67,14 @@ public class EventCommand implements AokoCommand {
             return false;
         }
 
+        assert toParsed.dateTime != null : "Parsed event end date/time must not be null";
+
         if (toParsed.dateTime.isBefore(fromParsed.dateTime)) {
             ui.showMessageBlock("The event end must not be before the start.");
             return false;
         }
+
+        assert !toParsed.dateTime.isBefore(fromParsed.dateTime) : "Event end must not be before start";
 
         Task task = new Event(
             description,
@@ -70,7 +82,10 @@ public class EventCommand implements AokoCommand {
             fromParsed.hasTime,
             toParsed.dateTime,
             toParsed.hasTime);
-        CommandValidation.addTaskAndPersist(task, tasks, storage, ui);
+        assert task != null : "Constructed task must not be null";
+        tasks.add(task);
+        storage.save(tasks);
+        ui.showAdded(task, tasks.size());
         return false;
     }
 }

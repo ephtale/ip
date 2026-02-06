@@ -1,4 +1,6 @@
 T | 1 | read book
 D | 1 | return book | 2019-06-06
 T | 1 | join sports club
+T | 0 | borrow book
 E | 0 | project meeting | 2019-06-06T14:00:00 | 2019-06-06T16:00:00
+T | 0 | lick

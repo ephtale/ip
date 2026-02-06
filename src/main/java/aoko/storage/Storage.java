@@ -29,6 +29,7 @@ public class Storage {
      * Creates storage backed by a given file path.
      */
     public Storage(Path path) {
+        assert path != null : "Storage path must not be null";
         this.path = path;
     }
 
@@ -38,14 +39,17 @@ public class Storage {
      * <p>If the file does not exist or cannot be read, returns an empty list.
      */
     public List<Task> load() {
+        assert path != null : "Storage path must not be null";
         if (!Files.exists(path)) {
             return new ArrayList<>();
         }
 
         try {
             List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
+            assert lines != null : "Files.readAllLines must not return null";
             List<Task> tasks = new ArrayList<>();
             for (String line : lines) {
+                assert line != null : "Lines read from file must not be null";
                 Task task = decodeTask(line);
                 if (task != null) {
                     tasks.add(task);
@@ -62,6 +66,7 @@ public class Storage {
      * Saves the given task list to disk.
      */
     public void save(TaskList taskList) {
+        assert taskList != null : "TaskList to save must not be null";
         try {
             saveInternal(taskList.asUnmodifiableList());
         } catch (IOException e) {
@@ -73,6 +78,7 @@ public class Storage {
      * Writes tasks to disk, creating parent directories if needed.
      */
     private void saveInternal(List<Task> tasks) throws IOException {
+        assert tasks != null : "Task list to save must not be null";
         Path parent = path.getParent();
         if (parent != null) {
             Files.createDirectories(parent);
@@ -89,6 +95,9 @@ public class Storage {
      * Encodes a task into its persisted line representation.
      */
     private static String encodeTask(Task task) {
+        assert task != null : "Cannot encode a null task";
+        assert task.getDescription() != null : "Task description must not be null";
+        assert !task.getDescription().trim().isEmpty() : "Task description must not be blank";
         String doneFlag = task.isDone() ? "1" : "0";
 
         if (task instanceof Todo) {
@@ -129,6 +138,7 @@ public class Storage {
         }
 
         String[] parts = trimmed.split("\\s*\\|\\s*");
+        assert parts != null : "Split parts must not be null";
         try {
             String type = parts[0].trim();
             boolean isDone = parts.length > 1 && parts[1].trim().equals("1");
@@ -139,20 +149,33 @@ public class Storage {
                 if (parts.length < 3) {
                     return null;
                 }
-                task = new Todo(parts[2]);
+                String desc = parts[2] == null ? "" : parts[2].trim();
+                if (desc.isEmpty()) {
+                    return null;
+                }
+                task = new Todo(desc);
             }
             case "D" -> {
                 if (parts.length < 4) {
+                    return null;
+                }
+                String desc = parts[2] == null ? "" : parts[2].trim();
+                if (desc.isEmpty()) {
                     return null;
                 }
                 Parser.ParsedDateTime parsed = parseLegacyOrIso(parts[3].trim());
                 if (parsed == null) {
                     return null;
                 }
-                task = new Deadline(parts[2], parsed.dateTime, parsed.hasTime);
+                assert parsed.dateTime != null : "Parsed deadline date/time must not be null";
+                task = new Deadline(desc, parsed.dateTime, parsed.hasTime);
             }
             case "E" -> {
                 if (parts.length < 5) {
+                    return null;
+                }
+                String desc = parts[2] == null ? "" : parts[2].trim();
+                if (desc.isEmpty()) {
                     return null;
                 }
                 Parser.ParsedDateTime fromParsed = Parser.parseIsoDateOrDateTime(parts[3].trim());
@@ -160,8 +183,10 @@ public class Storage {
                 if (fromParsed == null || toParsed == null) {
                     return null;
                 }
+                assert fromParsed.dateTime != null : "Parsed event start date/time must not be null";
+                assert toParsed.dateTime != null : "Parsed event end date/time must not be null";
                 task = new Event(
-                        parts[2],
+                        desc,
                         fromParsed.dateTime,
                         fromParsed.hasTime,
                         toParsed.dateTime,
@@ -186,6 +211,7 @@ public class Storage {
      * Parses legacy (date-only) or ISO date-time strings used for deadlines in storage.
      */
     private static Parser.ParsedDateTime parseLegacyOrIso(String byRaw) {
+        assert byRaw != null : "Raw deadline string must not be null";
         // Supports ISO date or ISO date-time (current format)
         if (byRaw.contains("T")) {
             try {
