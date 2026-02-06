@@ -35,19 +35,19 @@ public class DialogBox extends HBox {
         } catch (IOException e) {
             throw new IllegalStateException("Failed to load dialog box layout", e);
         }
-    }
 
         assert dialog != null : "FXML dialog label must be injected";
         assert displayPicture != null : "FXML image view must be injected";
+        setTextAndImage(text, img);
+    }
 
+    private void setTextAndImage(String text, Image img) {
         dialog.setText(text);
         displayPicture.setImage(img);
     }
 
     private static DialogBox create(String text, Image img, boolean flip) {
-        DialogBox dialogBox = new DialogBox();
-        dialogBox.loadFxml();
-        dialogBox.setTextAndImage(text, img);
+        DialogBox dialogBox = new DialogBox(text, img);
         if (flip) {
             dialogBox.flip();
         }

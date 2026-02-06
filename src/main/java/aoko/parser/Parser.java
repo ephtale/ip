@@ -5,11 +5,29 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 
 /**
  * Parses raw user input into command words, arguments, and date/time values.
  */
 public class Parser {
+    private static final DateTimeFormatter[] DATE_TIME_FORMATS = new DateTimeFormatter[] {
+        DateTimeFormatter.ofPattern("uuuu-MM-dd HHmm").withResolverStyle(ResolverStyle.STRICT),
+        DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm").withResolverStyle(ResolverStyle.STRICT),
+        DateTimeFormatter.ofPattern("d/M/uuuu HHmm").withResolverStyle(ResolverStyle.STRICT),
+        DateTimeFormatter.ofPattern("d/M/uuuu H:mm").withResolverStyle(ResolverStyle.STRICT)
+    };
+
+    private static final DateTimeFormatter[] DATE_ONLY_FORMATS = new DateTimeFormatter[] {
+        DateTimeFormatter.ofPattern("d/M/uuuu").withResolverStyle(ResolverStyle.STRICT)
+    };
+
+    private static final DateTimeFormatter[] TIME_ONLY_FORMATS = new DateTimeFormatter[] {
+        DateTimeFormatter.ofPattern("HHmm").withResolverStyle(ResolverStyle.STRICT),
+        DateTimeFormatter.ofPattern("H:mm").withResolverStyle(ResolverStyle.STRICT),
+        DateTimeFormatter.ofPattern("HH:mm").withResolverStyle(ResolverStyle.STRICT)
+    };
+
     public enum Command {
         LIST, MARK, UNMARK, DELETE, TODO, DEADLINE, EVENT, ON, FIND, BYE, UNKNOWN;
 
@@ -208,6 +226,11 @@ public class Parser {
         String s = rawTo == null ? "" : rawTo.trim();
         if (s.isEmpty()) {
             return null;
+        }
+
+        if (s.equals("2400") || s.equals("24:00")) {
+            LocalDate date = fromParsed.dateTime.toLocalDate();
+            return new ParsedDateTime(LocalDateTime.of(date, LocalTime.MIDNIGHT), true);
         }
 
         LocalTime time = null;
