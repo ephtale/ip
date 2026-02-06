@@ -1,6 +1,5 @@
 package aoko.command;
 
-import aoko.parser.Parser;
 import aoko.storage.Storage;
 import aoko.task.Task;
 import aoko.task.TaskList;
@@ -10,6 +9,9 @@ import aoko.ui.Ui;
  * Marks a task as done by its 1-based index.
  */
 public class MarkCommand implements AokoCommand {
+    private static final String INVALID_INDEX_MESSAGE =
+            "Please provide a valid task number to mark (e.g., \"mark 2\").";
+
     private final String[] parts;
 
     /**

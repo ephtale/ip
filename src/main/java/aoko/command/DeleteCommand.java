@@ -1,6 +1,5 @@
 package aoko.command;
 
-import aoko.parser.Parser;
 import aoko.storage.Storage;
 import aoko.task.Task;
 import aoko.task.TaskList;
@@ -10,6 +9,9 @@ import aoko.ui.Ui;
  * Deletes a task by its 1-based index.
  */
 public class DeleteCommand implements AokoCommand {
+    private static final String INVALID_INDEX_MESSAGE =
+            "Please provide a valid task number to delete (e.g., \"delete 3\").";
+
     private final String[] parts;
 
     /**

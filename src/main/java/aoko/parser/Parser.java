@@ -99,7 +99,7 @@ public class Parser {
             return null;
         }
         try {
-            return Integer.parseInt(parts[1].trim());
+            return Integer.valueOf(parts[1]);
         } catch (NumberFormatException e) {
             return null;
         }
@@ -121,32 +121,21 @@ public class Parser {
             // fall through
         }
 
-        try {
-            DateTimeFormatter f1 = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
-            return new ParsedDateTime(LocalDateTime.parse(s, f1), true);
-        } catch (DateTimeParseException ignored) {
-            // fall through
-        }
-        try {
-            DateTimeFormatter f2 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-            return new ParsedDateTime(LocalDateTime.parse(s, f2), true);
-        } catch (DateTimeParseException ignored) {
-            // fall through
+        for (DateTimeFormatter formatter : DATE_TIME_FORMATS) {
+            try {
+                return new ParsedDateTime(LocalDateTime.parse(s, formatter), true);
+            } catch (DateTimeParseException ignored) {
+                // try next
+            }
         }
 
-        try {
-            DateTimeFormatter f3 = DateTimeFormatter.ofPattern("d/M/yyyy HHmm");
-            return new ParsedDateTime(LocalDateTime.parse(s, f3), true);
-        } catch (DateTimeParseException ignored) {
-            // fall through
-        }
-
-        try {
-            DateTimeFormatter f4 = DateTimeFormatter.ofPattern("d/M/yyyy");
-            LocalDate date = LocalDate.parse(s, f4);
-            return new ParsedDateTime(date.atStartOfDay(), false);
-        } catch (DateTimeParseException ignored) {
-            // fall through
+        for (DateTimeFormatter formatter : DATE_ONLY_FORMATS) {
+            try {
+                LocalDate date = LocalDate.parse(s, formatter);
+                return new ParsedDateTime(date.atStartOfDay(), false);
+            } catch (DateTimeParseException ignored) {
+                // try next
+            }
         }
 
         return null;
@@ -169,11 +158,12 @@ public class Parser {
             // fall through
         }
 
-        try {
-            DateTimeFormatter f = DateTimeFormatter.ofPattern("d/M/yyyy");
-            return LocalDate.parse(s, f);
-        } catch (DateTimeParseException ignored) {
-            // fall through
+        for (DateTimeFormatter formatter : DATE_ONLY_FORMATS) {
+            try {
+                return LocalDate.parse(s, formatter);
+            } catch (DateTimeParseException ignored) {
+                // try next
+            }
         }
 
         return null;
@@ -220,17 +210,18 @@ public class Parser {
             return null;
         }
 
-        LocalTime time;
-        try {
-            DateTimeFormatter hhmm = DateTimeFormatter.ofPattern("HHmm");
-            time = LocalTime.parse(s, hhmm);
-        } catch (DateTimeParseException ignored) {
+        LocalTime time = null;
+        for (DateTimeFormatter formatter : TIME_ONLY_FORMATS) {
             try {
-                DateTimeFormatter hhColon = DateTimeFormatter.ofPattern("H:mm");
-                time = LocalTime.parse(s, hhColon);
-            } catch (DateTimeParseException ignored2) {
-                return null;
+                time = LocalTime.parse(s, formatter);
+                break;
+            } catch (DateTimeParseException ignored) {
+                // try next
             }
+        }
+
+        if (time == null) {
+            return null;
         }
 
         LocalDate date = fromParsed.dateTime.toLocalDate();

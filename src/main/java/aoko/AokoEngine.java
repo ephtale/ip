@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.function.Function;
 
 import aoko.command.AokoCommand;
 import aoko.command.CommandFactory;
@@ -16,6 +17,16 @@ import aoko.ui.Ui;
  * Stateful execution engine for Aoko commands.
  */
 public class AokoEngine {
+    private static class Captured<T> {
+        private final String output;
+        private final T result;
+
+        private Captured(String output, T result) {
+            this.output = output;
+            this.result = result;
+        }
+    }
+
     /**
      * Result of processing a single user input.
      */

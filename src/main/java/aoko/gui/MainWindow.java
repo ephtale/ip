@@ -48,6 +48,7 @@ public class MainWindow extends AnchorPane {
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void handleUserInput() {
         if (engine == null) {
             assert false : "Engine should be set before handling user input";

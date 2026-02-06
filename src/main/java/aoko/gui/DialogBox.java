@@ -35,12 +35,23 @@ public class DialogBox extends HBox {
         } catch (IOException e) {
             throw new IllegalStateException("Failed to load dialog box layout", e);
         }
+    }
 
         assert dialog != null : "FXML dialog label must be injected";
         assert displayPicture != null : "FXML image view must be injected";
 
         dialog.setText(text);
         displayPicture.setImage(img);
+    }
+
+    private static DialogBox create(String text, Image img, boolean flip) {
+        DialogBox dialogBox = new DialogBox();
+        dialogBox.loadFxml();
+        dialogBox.setTextAndImage(text, img);
+        if (flip) {
+            dialogBox.flip();
+        }
+        return dialogBox;
     }
 
     /**
@@ -57,12 +68,10 @@ public class DialogBox extends HBox {
     }
 
     public static DialogBox getUserDialog(String text, Image img) {
-        return new DialogBox(text, img);
+        return create(text, img, false);
     }
 
     public static DialogBox getAokoDialog(String text, Image img) {
-        var db = new DialogBox(text, img);
-        db.flip();
-        return db;
+        return create(text, img, true);
     }
 }

@@ -10,6 +10,9 @@ import aoko.ui.Ui;
  * Adds a todo task.
  */
 public class TodoCommand implements AokoCommand {
+    private static final String EMPTY_DESCRIPTION_MESSAGE =
+            "Please provide a description for a todo (e.g., \"todo borrow book\").";
+
     private final String remainder;
 
     /**
