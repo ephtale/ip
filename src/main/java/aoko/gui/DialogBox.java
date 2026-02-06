@@ -24,7 +24,11 @@ public class DialogBox extends HBox {
     @FXML
     private ImageView displayPicture;
 
-    private DialogBox(String text, Image img) {
+    private DialogBox() {
+        // Constructed first; FXML wiring is done after construction to avoid leaking `this`.
+    }
+
+    private void loadFxml() {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(DialogBox.class.getResource("/view/DialogBox.fxml"));
             fxmlLoader.setController(this);
@@ -33,9 +37,21 @@ public class DialogBox extends HBox {
         } catch (IOException e) {
             throw new IllegalStateException("Failed to load dialog box layout", e);
         }
+    }
 
+    private void setTextAndImage(String text, Image img) {
         dialog.setText(text);
         displayPicture.setImage(img);
+    }
+
+    private static DialogBox create(String text, Image img, boolean flip) {
+        DialogBox dialogBox = new DialogBox();
+        dialogBox.loadFxml();
+        dialogBox.setTextAndImage(text, img);
+        if (flip) {
+            dialogBox.flip();
+        }
+        return dialogBox;
     }
 
     /**
@@ -50,12 +66,10 @@ public class DialogBox extends HBox {
     }
 
     public static DialogBox getUserDialog(String text, Image img) {
-        return new DialogBox(text, img);
+        return create(text, img, false);
     }
 
     public static DialogBox getAokoDialog(String text, Image img) {
-        var db = new DialogBox(text, img);
-        db.flip();
-        return db;
+        return create(text, img, true);
     }
 }

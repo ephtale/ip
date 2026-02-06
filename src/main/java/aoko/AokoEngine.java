@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.function.Function;
 
 import aoko.command.AokoCommand;
 import aoko.command.CommandFactory;
@@ -19,6 +20,16 @@ import aoko.ui.Ui;
  * the same in-memory state.
  */
 public class AokoEngine {
+    private static class Captured<T> {
+        private final String output;
+        private final T result;
+
+        private Captured(String output, T result) {
+            this.output = output;
+            this.result = result;
+        }
+    }
+
     /**
      * Result of processing a single user input.
      */
@@ -76,27 +87,31 @@ public class AokoEngine {
         return exit;
     }
 
+    private static <T> Captured<T> captureOutput(Function<Ui, T> action) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (PrintStream ps = new PrintStream(baos, true, StandardCharsets.UTF_8)) {
+            Ui ui = new Ui(ps);
+            T result = action.apply(ui);
+            return new Captured<>(baos.toString(StandardCharsets.UTF_8), result);
+        }
+    }
+
     /**
      * Convenience for GUI/testing: processes input and returns what would have been printed.
      */
     public EngineResponse processToString(String userInput) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try (PrintStream ps = new PrintStream(baos, true, StandardCharsets.UTF_8)) {
-            Ui ui = new Ui(ps);
-            boolean exit = process(userInput, ui);
-            return new EngineResponse(baos.toString(StandardCharsets.UTF_8), exit);
-        }
+        Captured<Boolean> captured = captureOutput(ui -> process(userInput, ui));
+        return new EngineResponse(captured.output, captured.result);
     }
 
     /**
      * Convenience for GUI/testing: returns the welcome message as a string.
      */
     public String welcomeToString() {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try (PrintStream ps = new PrintStream(baos, true, StandardCharsets.UTF_8)) {
-            Ui ui = new Ui(ps);
+        Captured<Void> captured = captureOutput(ui -> {
             showWelcome(ui);
-            return baos.toString(StandardCharsets.UTF_8);
-        }
+            return null;
+        });
+        return captured.output;
     }
 }

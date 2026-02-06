@@ -25,10 +25,7 @@ public class Aoko {
 
         engine.showWelcome(ui);
         try (Scanner scanner = new Scanner(System.in)) {
-            while (true) {
-                if (!scanner.hasNextLine()) {
-                    break; // EOF
-                }
+            while (scanner.hasNextLine()) {
                 String userInput = scanner.nextLine().trim();
                 if (userInput.isEmpty()) {
                     continue;

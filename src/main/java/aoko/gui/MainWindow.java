@@ -43,6 +43,7 @@ public class MainWindow extends AnchorPane {
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void handleUserInput() {
         if (engine == null) {
             return;

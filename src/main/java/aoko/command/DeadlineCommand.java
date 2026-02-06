@@ -11,6 +11,9 @@ import aoko.ui.Ui;
  * Adds a deadline task with a parsed date/time.
  */
 public class DeadlineCommand implements AokoCommand {
+    private static final String DEADLINE_USAGE =
+            "Please use: deadline <description> /by <by> (e.g., \"deadline return book /by Sunday\").";
+
     private final String remainder;
 
     /**
@@ -26,16 +29,14 @@ public class DeadlineCommand implements AokoCommand {
     public boolean execute(Ui ui, Storage storage, TaskList tasks) {
         int byIndex = remainder.indexOf("/by");
         if (remainder.trim().isEmpty() || byIndex < 0) {
-            ui.showMessageBlock(
-                    "Please use: deadline <description> /by <by> (e.g., \"deadline return book /by Sunday\").");
+            ui.showMessageBlock(DEADLINE_USAGE);
             return false;
         }
 
         String description = remainder.substring(0, byIndex).trim();
         String by = remainder.substring(byIndex + 3).trim();
         if (description.isEmpty() || by.isEmpty()) {
-            ui.showMessageBlock(
-                    "Please use: deadline <description> /by <by> (e.g., \"deadline return book /by Sunday\").");
+            ui.showMessageBlock(DEADLINE_USAGE);
             return false;
         }
 

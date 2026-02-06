@@ -93,11 +93,14 @@ public class Parser {
      * @return Parsed index, or {@code null} if invalid.
      */
     public static Integer parseIndex(String[] parts) {
+        if (parts == null) {
+            return null;
+        }
         if (parts.length < 2) {
             return null;
         }
         try {
-            return Integer.parseInt(parts[1].trim());
+            return Integer.valueOf(parts[1]);
         } catch (NumberFormatException e) {
             return null;
         }
