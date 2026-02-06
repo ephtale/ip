@@ -25,6 +25,7 @@ public class CommandFactory {
         case TODO -> new TodoCommand(parsed.remainder);
         case DEADLINE -> new DeadlineCommand(parsed.remainder);
         case EVENT -> new EventCommand(parsed.remainder);
+        case UNDO -> new UnknownCommand();
         case BYE -> new ByeCommand();
         case UNKNOWN -> new UnknownCommand();
         };

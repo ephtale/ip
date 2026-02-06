@@ -4,7 +4,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.function.Function;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.List;
 
 import aoko.command.AokoCommand;
 import aoko.command.CommandFactory;
@@ -51,6 +53,7 @@ public class AokoEngine {
 
     private final Storage storage;
     private final TaskList tasks;
+    private final Deque<List<String>> undoStack;
 
     /**
      * Creates an engine backed by the given save path.
@@ -67,6 +70,14 @@ public class AokoEngine {
 
         this.tasks = new TaskList(loadedTasks);
         assert this.tasks != null : "TaskList should be constructed";
+        this.undoStack = new ArrayDeque<>();
+    }
+
+    private static boolean isUndoableMutation(Parser.Command command) {
+        return switch (command) {
+        case TODO, DEADLINE, EVENT, DELETE, MARK, UNMARK -> true;
+        default -> false;
+        };
     }
 
     /**
@@ -89,18 +100,62 @@ public class AokoEngine {
         assert tasks != null : "Task list must be initialized";
 
         Parser.ParsedCommand parsed = Parser.parseCommand(userInput);
+
+        if (parsed.command == Parser.Command.UNDO) {
+            undo(ui);
+            return false;
+        }
+
+        List<String> beforeSnapshot = null;
+        if (isUndoableMutation(parsed.command)) {
+            beforeSnapshot = storage.snapshot(tasks);
+        }
+
         assert parsed != null : "Parser.parseCommand must not return null";
         assert parsed.parts != null : "Parsed command parts must not be null";
         assert parsed.parts.length >= 1 : "Parsed command must contain at least the command word";
         assert parsed.remainder != null : "Parsed remainder must not be null";
 
         AokoCommand command = CommandFactory.fromParsed(parsed);
+        boolean exit;
+        try {
+            exit = command.execute(ui, storage, tasks);
+        } catch (RuntimeException e) {
+            ui.showMessageBlock("Something went wrong while executing that command.");
+            return false;
+        }
         assert command != null : "CommandFactory must always return a command";
-        boolean exit = command.execute(ui, storage, tasks);
         if (exit) {
             ui.showBye();
         }
+
+        if (!exit && beforeSnapshot != null) {
+            List<String> afterSnapshot = storage.snapshot(tasks);
+            if (!afterSnapshot.equals(beforeSnapshot)) {
+                undoStack.push(beforeSnapshot);
+            }
+        }
         return exit;
+    }
+
+    /**
+     * Undoes the most recent successful state-changing command.
+     */
+    private void undo(Ui ui) {
+        assert ui != null : "ui must not be null";
+
+        if (undoStack.isEmpty()) {
+            ui.showUndoEmpty();
+            return;
+        }
+
+        List<String> snapshot = undoStack.pop();
+        try {
+            storage.restore(tasks, snapshot);
+            ui.showUndoSuccess();
+        } catch (RuntimeException e) {
+            ui.showMessageBlock("Failed to undo the most recent change.");
+        }
     }
 
     /**
