@@ -12,7 +12,10 @@ if exist ..\data\aoko.txt del ..\data\aoko.txt
 REM compile the code into the bin folder
 REM (recursively) gather all .java sources into a file list for javac
 if exist sources.txt del sources.txt
-dir /s /b ..\src\main\java\*.java > sources.txt
+for /r "..\src\main\java" %%F in (*.java) do (
+    echo %%F | findstr /i "\\gui\\" >nul
+    if errorlevel 1 echo %%F>> sources.txt
+)
 javac -Xlint:none -d ..\bin @sources.txt
 IF ERRORLEVEL 1 (
     echo ********** BUILD FAILURE **********

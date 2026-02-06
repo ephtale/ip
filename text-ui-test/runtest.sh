@@ -19,7 +19,8 @@ then
 fi
 
 # compile the code into the bin folder, terminates if error occurred
-if ! javac -Xlint:none -d ../bin $(find ../src/main/java -name "*.java")
+# exclude JavaFX GUI sources so the text UI tests can run on JDKs without JavaFX
+if ! javac -Xlint:none -d ../bin $(find ../src/main/java -path "*/gui/*" -prune -o -name "*.java" -print)
 then
     echo "********** BUILD FAILURE **********"
     exit 1

@@ -19,6 +19,7 @@ public class AokoGuiApp extends Application {
     private AokoEngine engine;
 
     private static Path resolveSavePath(List<String> rawArgs) {
+        assert rawArgs == null || !rawArgs.contains(null) : "Raw args list should not contain null entries";
         if (rawArgs != null && !rawArgs.isEmpty()) {
             String first = rawArgs.get(0);
             if (first != null && !first.trim().isEmpty()) {
@@ -30,14 +31,21 @@ public class AokoGuiApp extends Application {
 
     @Override
     public void start(Stage stage) {
+        assert stage != null : "Primary stage must not be null";
         try {
             Path savePath = resolveSavePath(getParameters().getRaw());
+            assert savePath != null : "Resolved save path must not be null";
             engine = new AokoEngine(savePath);
+            assert engine != null : "Engine must be constructed";
 
-            FXMLLoader fxmlLoader = new FXMLLoader(AokoGuiApp.class.getResource("/view/MainWindow.fxml"));
+            var mainWindowResource = AokoGuiApp.class.getResource("/view/MainWindow.fxml");
+            assert mainWindowResource != null : "Missing /view/MainWindow.fxml resource";
+            FXMLLoader fxmlLoader = new FXMLLoader(mainWindowResource);
             AnchorPane ap = fxmlLoader.load();
+            assert ap != null : "Main window root must not be null";
 
             MainWindow controller = fxmlLoader.getController();
+            assert controller != null : "MainWindow controller must not be null";
             controller.setEngine(engine);
             controller.showBotMessage(engine.welcomeToString());
 

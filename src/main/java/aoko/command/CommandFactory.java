@@ -10,6 +10,11 @@ public class CommandFactory {
      * Maps a parsed command to the corresponding executable command object.
      */
     public static AokoCommand fromParsed(Parser.ParsedCommand parsed) {
+        assert parsed != null : "Parsed command must not be null";
+        assert parsed.command != null : "Parsed command type must not be null";
+        assert parsed.parts != null : "Parsed parts must not be null";
+        assert parsed.parts.length >= 1 : "Parsed parts must include the command word";
+        assert parsed.remainder != null : "Parsed remainder must not be null";
         return switch (parsed.command) {
         case LIST -> new ListCommand();
         case ON -> new OnCommand(parsed.remainder);

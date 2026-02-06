@@ -82,6 +82,9 @@ tasks.register('shadowGuiJar', ShadowJar) {
     archiveBaseName = 'Aoko'
     archiveClassifier = 'gui'
 
+    from sourceSets.main.output
+    configurations = [project.configurations.runtimeClasspath]
+
     manifest {
         attributes(
                 'Main-Class': 'aoko.gui.Launcher'

@@ -1,3 +1,10 @@
 {
-    "java.configuration.updateBuildConfiguration": "disabled"
+    "java.configuration.updateBuildConfiguration": "disabled",
+    "[java]": {
+        "editor.formatOnSave": false,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "never"
+        }
+    },
+    "java.saveActions.organizeImports": false
 }

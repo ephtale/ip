@@ -29,6 +29,9 @@ public class Event extends Task {
      */
     public Event(String description, LocalDateTime from, boolean fromHasTime, LocalDateTime to, boolean toHasTime) {
         super(description);
+        assert from != null : "Event start must not be null";
+        assert to != null : "Event end must not be null";
+        assert !to.isBefore(from) : "Event end must not be before start";
         this.from = from;
         this.to = to;
         this.fromHasTime = fromHasTime;
@@ -39,6 +42,7 @@ public class Event extends Task {
      * Returns the event start date/time.
      */
     public LocalDateTime getFrom() {
+        assert from != null : "Event start must not be null";
         return from;
     }
 
@@ -46,6 +50,7 @@ public class Event extends Task {
      * Returns the event end date/time.
      */
     public LocalDateTime getTo() {
+        assert to != null : "Event end must not be null";
         return to;
     }
 
@@ -70,6 +75,9 @@ public class Event extends Task {
 
     @Override
     protected String taskDetails() {
+        assert from != null : "Event start must not be null";
+        assert to != null : "Event end must not be null";
+        assert !to.isBefore(from) : "Event end must not be before start";
         String formattedFrom = fromHasTime ? from.format(DISPLAY_DATE_TIME) : from.toLocalDate().format(DISPLAY_DATE);
 
         String formattedTo;
