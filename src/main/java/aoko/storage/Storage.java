@@ -164,7 +164,8 @@ public class Storage {
             String encodedTo = event.toHasTime()
                     ? event.getTo().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
                     : event.getTo().toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
-            return "E | " + doneFlag + " | " + event.getDescription() + " | " + encodedFrom + " | " + encodedTo;
+            return "E | " + doneFlag + " | " + event.getDescription() 
+                + " | " + encodedFrom + " | " + encodedTo;
         }
 
         return "T | " + doneFlag + " | " + task.getDescription();

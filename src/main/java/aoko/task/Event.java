@@ -8,7 +8,9 @@ import java.util.Locale;
  * Represents an event task with a start and end date/time.
  */
 public class Event extends Task {
-    private static final DateTimeFormatter DISPLAY_DATE = DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.ENGLISH);
+    private static final DateTimeFormatter DISPLAY_DATE = DateTimeFormatter.ofPattern(
+            "MMM dd yyyy", 
+            Locale.ENGLISH);
     private static final DateTimeFormatter DISPLAY_DATE_TIME = DateTimeFormatter.ofPattern(
             "MMM dd yyyy HH:mm",
             Locale.ENGLISH);
@@ -29,7 +31,13 @@ public class Event extends Task {
      * @param to End date/time.
      * @param toHasTime Whether the end includes a time.
      */
-    public Event(String description, LocalDateTime from, boolean fromHasTime, LocalDateTime to, boolean toHasTime) {
+    public Event(
+        String description, 
+        LocalDateTime from, 
+        boolean fromHasTime, 
+        LocalDateTime to, 
+        boolean toHasTime) {
+
         super(description);
         assert from != null : "Event start must not be null";
         assert to != null : "Event end must not be null";
@@ -80,13 +88,19 @@ public class Event extends Task {
         assert from != null : "Event start must not be null";
         assert to != null : "Event end must not be null";
         assert !to.isBefore(from) : "Event end must not be before start";
-        String formattedFrom = fromHasTime ? from.format(DISPLAY_DATE_TIME) : from.toLocalDate().format(DISPLAY_DATE);
+        String formattedFrom = fromHasTime 
+                               ? from.format(DISPLAY_DATE_TIME) 
+                               : from.toLocalDate().format(DISPLAY_DATE);
 
         String formattedTo;
         if (toHasTime && fromHasTime && from.toLocalDate().equals(to.toLocalDate())) {
-            formattedTo = to.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm", Locale.ENGLISH));
+            formattedTo = to.toLocalTime().format(DateTimeFormatter.ofPattern(
+                "HH:mm", 
+                Locale.ENGLISH));
         } else {
-            formattedTo = toHasTime ? to.format(DISPLAY_DATE_TIME) : to.toLocalDate().format(DISPLAY_DATE);
+            formattedTo = toHasTime 
+                          ? to.format(DISPLAY_DATE_TIME) 
+                          : to.toLocalDate().format(DISPLAY_DATE);
         }
 
         return description + " (from: " + formattedFrom + " to: " + formattedTo + ")";
@@ -96,8 +110,12 @@ public class Event extends Task {
     protected String uniqueDetailsKeyExtras() {
         assert from != null : "Event start must not be null";
         assert to != null : "Event end must not be null";
-        String fromKey = fromHasTime ? from.format(KEY_DATE_TIME) : from.toLocalDate().format(KEY_DATE);
-        String toKey = toHasTime ? to.format(KEY_DATE_TIME) : to.toLocalDate().format(KEY_DATE);
+        String fromKey = fromHasTime 
+                         ? from.format(KEY_DATE_TIME) 
+                         : from.toLocalDate().format(KEY_DATE);
+        String toKey = toHasTime 
+                       ? to.format(KEY_DATE_TIME) 
+                       : to.toLocalDate().format(KEY_DATE);
         return "|" + fromKey + "|" + fromHasTime + "|" + toKey + "|" + toHasTime;
     }
 }

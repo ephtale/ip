@@ -8,7 +8,9 @@ import java.util.Locale;
  * Represents a task that must be done by a specific date/time.
  */
 public class Deadline extends Task {
-    private static final DateTimeFormatter DISPLAY_DATE = DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.ENGLISH);
+    private static final DateTimeFormatter DISPLAY_DATE = DateTimeFormatter.ofPattern(
+            "MMM dd yyyy", 
+            Locale.ENGLISH);
     private static final DateTimeFormatter DISPLAY_DATE_TIME = DateTimeFormatter.ofPattern(
             "MMM dd yyyy HH:mm",
             Locale.ENGLISH);
@@ -55,7 +57,9 @@ public class Deadline extends Task {
     @Override
     protected String taskDetails() {
         assert by != null : "Deadline date/time must not be null";
-        String formatted = hasTime ? by.format(DISPLAY_DATE_TIME) : by.toLocalDate().format(DISPLAY_DATE);
+        String formatted = hasTime 
+                           ? by.format(DISPLAY_DATE_TIME) 
+                           : by.toLocalDate().format(DISPLAY_DATE);
         return description + " (by: " + formatted + ")";
     }
 

@@ -19,7 +19,8 @@ public class AokoGuiApp extends Application {
     private AokoEngine engine;
 
     private static Path resolveSavePath(List<String> rawArgs) {
-        assert rawArgs == null || !rawArgs.contains(null) : "Raw args list should not contain null entries";
+        assert rawArgs == null || !rawArgs.contains(null) 
+                : "Raw args list should not contain null entries";
         if (rawArgs != null && !rawArgs.isEmpty()) {
             String first = rawArgs.get(0);
             if (first != null && !first.trim().isEmpty()) {

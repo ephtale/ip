@@ -80,7 +80,8 @@ public class TaskList {
      * Returns the task at the given index (0-based).
      */
     public Task get(int zeroBasedIndex) {
-        assert zeroBasedIndex >= 0 && zeroBasedIndex < tasks.size() : "Index out of bounds: " + zeroBasedIndex;
+        assert zeroBasedIndex >= 0 && zeroBasedIndex < tasks.size() 
+                : "Index out of bounds: " + zeroBasedIndex;
         return tasks.get(zeroBasedIndex);
     }
 
@@ -88,7 +89,8 @@ public class TaskList {
      * Removes and returns the task at the given index (0-based).
      */
     public Task remove(int zeroBasedIndex) {
-        assert zeroBasedIndex >= 0 && zeroBasedIndex < tasks.size() : "Index out of bounds: " + zeroBasedIndex;
+        assert zeroBasedIndex >= 0 && zeroBasedIndex < tasks.size() 
+                : "Index out of bounds: " + zeroBasedIndex;
         return tasks.remove(zeroBasedIndex);
     }
 

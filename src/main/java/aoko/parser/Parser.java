@@ -12,10 +12,14 @@ import java.time.format.ResolverStyle;
  */
 public class Parser {
     private static final DateTimeFormatter[] DATE_TIME_FORMATS = new DateTimeFormatter[] {
-        DateTimeFormatter.ofPattern("uuuu-MM-dd HHmm").withResolverStyle(ResolverStyle.STRICT),
-        DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm").withResolverStyle(ResolverStyle.STRICT),
-        DateTimeFormatter.ofPattern("d/M/uuuu HHmm").withResolverStyle(ResolverStyle.STRICT),
-        DateTimeFormatter.ofPattern("d/M/uuuu H:mm").withResolverStyle(ResolverStyle.STRICT)
+        DateTimeFormatter.ofPattern("uuuu-MM-dd HHmm")
+                .withResolverStyle(ResolverStyle.STRICT),
+        DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm")
+                .withResolverStyle(ResolverStyle.STRICT),
+        DateTimeFormatter.ofPattern("d/M/uuuu HHmm")
+                .withResolverStyle(ResolverStyle.STRICT),
+        DateTimeFormatter.ofPattern("d/M/uuuu H:mm")
+                .withResolverStyle(ResolverStyle.STRICT)
     };
 
     private static final DateTimeFormatter[] DATE_ONLY_FORMATS = new DateTimeFormatter[] {
@@ -36,18 +40,18 @@ public class Parser {
                 return UNKNOWN;
             }
             return switch (token.toLowerCase()) {
-            case "list" -> LIST;
-            case "mark" -> MARK;
-            case "unmark" -> UNMARK;
-            case "delete" -> DELETE;
-            case "todo" -> TODO;
-            case "deadline" -> DEADLINE;
-            case "event" -> EVENT;
-            case "on" -> ON;
-            case "find" -> FIND;
-            case "undo" -> UNDO;
-            case "bye" -> BYE;
-            default -> UNKNOWN;
+                case "list" -> LIST;
+                case "mark" -> MARK;
+                case "unmark" -> UNMARK;
+                case "delete" -> DELETE;
+                case "todo" -> TODO;
+                case "deadline" -> DEADLINE;
+                case "event" -> EVENT;
+                case "on" -> ON;
+                case "find" -> FIND;
+                case "undo" -> UNDO;
+                case "bye" -> BYE;
+                default -> UNKNOWN;
             };
         }
     }
@@ -199,7 +203,8 @@ public class Parser {
 
         if (s.contains("T")) {
             try {
-                return new ParsedDateTime(LocalDateTime.parse(s, DateTimeFormatter.ISO_LOCAL_DATE_TIME), true);
+                return new ParsedDateTime(LocalDateTime.parse(
+                        s, DateTimeFormatter.ISO_LOCAL_DATE_TIME), true);
             } catch (DateTimeParseException e) {
                 return null;
             }

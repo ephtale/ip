@@ -169,7 +169,8 @@ public class Ui {
     public void showUnknownCommand() {
         showLine();
         out.println("That's not a command I recognize.");
-        out.println("Available commands: list, mark, unmark, delete, todo, deadline, event, on, find, undo, bye");
+        out.println("Available commands: ");
+        out.println("list, mark, unmark, delete, todo, deadline, event, on, find, undo, bye");
         showLine();
     }
 
