@@ -77,3 +77,4 @@ javaw -jar "C:\path\to\Aoko-gui.jar" "%1"
 Notes:
 - `javaw` avoids opening a console window.
 - This requires Java 17+ installed on the user’s machine.
+- If you think a method is too long, it's probably filled with assertions.

@@ -16,6 +16,9 @@ Aoko is a simple CLI chatbot for managing tasks (todos, deadlines, and events). 
    - `deadline return book /by Sunday`
    - `event project meeting /from Mon 2pm /to 4pm`
    - `list`
+   - `find book`
+   - `on 2019-06-06`
+   - `undo`
    - `mark 2`
    - `unmark 2`
    - `delete 1`
@@ -89,6 +92,13 @@ Accepted formats:
 on 2019-06-06
 ```
 
+### `find <keyword>`
+Shows tasks whose description contains the given keyword.
+
+```
+find book
+```
+
 ### `mark <taskNumber>`
 Marks a task as done.
 ```
@@ -111,6 +121,13 @@ delete 3
 Exits the program.
 ```
 bye
+```
+
+### `undo`
+Undoes the most recent successful change (e.g., add/mark/unmark/delete).
+
+```
+undo
 ```
 
 ---
