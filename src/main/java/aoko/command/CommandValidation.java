@@ -37,7 +37,7 @@ final class CommandValidation {
         if (!tasks.addIfNotDuplicate(task)) {
             ui.showMessageBlock(
                     "Hah. Nice try.",
-                    "That exact task is already in your list — I'm a magician, not a copy machine.");
+                    "That exact task is already in your list - I'm a magician, not a copy machine.");
             return false;
         }
 
