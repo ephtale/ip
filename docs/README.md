@@ -33,6 +33,9 @@ list
 
 ### `todo <description>`
 Adds a ToDo task (no date/time attached).
+
+Note:
+- Aoko does not allow duplicate tasks with the exact same details. If you try to add an identical task, it will be rejected.
 ```
 todo borrow book
 ```
@@ -40,6 +43,9 @@ todo borrow book
 ### `deadline <description> /by <by>`
 Adds a Deadline task to be done before a given time/date.  
 `<by>` is parsed into a real date/time.
+
+Note:
+- Duplicate deadlines with the exact same description and `/by` value are rejected.
 
 Accepted formats:
 - `yyyy-MM-dd` (e.g., `2019-10-15`) → displayed as `MMM dd yyyy` (e.g., `Oct 15 2019`)
@@ -52,6 +58,9 @@ deadline return book /by 2/12/2019 1800
 ### `event <description> /from <from> /to <to>`
 Adds an Event task with a start and end.  
 `<from>` and `<to>` are parsed into real dates/times.
+
+Note:
+- Duplicate events with the exact same description, `/from`, and `/to` values are rejected.
 
 Accepted formats for `/from`:
 - `yyyy-MM-dd`
@@ -127,12 +136,17 @@ Aoko saves automatically whenever the task list changes (add/mark/unmark/delete)
 - **Path (relative to project root):** `./data/aoko.txt`
 - **If the file/folder doesn’t exist:** Aoko starts with an empty list and creates it on first save.
 - **If the file has corrupted lines:** those lines are skipped.
+- **If the file contains duplicates:** only the first occurrence is loaded; duplicates are skipped.
 
 ### Storage format (one task per line)
+Dates/times are saved in ISO formats:
+- Date-only: `yyyy-MM-dd` (e.g., `2019-06-06`)
+- Date-time: `yyyy-MM-ddTHH:mm` (e.g., `2019-08-06T14:00`)
+
 ```
 T | 1 | read book
 D | 0 | return book | 2019-06-06
-E | 0 | project meeting | Aug 6th 2pm | 4pm
+E | 0 | project meeting | 2019-08-06T14:00 | 2019-08-06T16:00
 ```
 
 ---

@@ -37,8 +37,6 @@ public class Storage {
 
     /**
      * Loads tasks from disk.
-     *
-     * <p>If the file does not exist or cannot be read, returns an empty list.
      */
     public List<Task> load() {
         assert path != null : "Storage path must not be null";
@@ -100,8 +98,6 @@ public class Storage {
 
     /**
      * Restores the given task list from a previously created snapshot and persists it to disk.
-     *
-     * <p>Corrupted lines are skipped using the same rules as {@link #load()}.
      *
      * @param taskList Task list instance to mutate.
      * @param snapshotLines Encoded task lines.

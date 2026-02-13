@@ -13,3 +13,12 @@
 
 ## Week 4
 - Updated README.md and CONTRIBUTORS.md
+
+## Week 5
+- Added multiple assertions that are safe to assume (A-Assertions)
+- Thoughts: Nothing to talk about, just some non-null assertions and formatting assertions.
+
+## Week 6
+- Improved upon multiple UI elements such as font size, image size, image crop, name component, etc. (A-BetterGui)
+- Handled duplicate tasks with sass (A-MoreErrorHandling)
+- Thoughts: Glad this thing can do UI for me since it's always the nitty gritty that takes up time. The duplicate handling was done very well.
