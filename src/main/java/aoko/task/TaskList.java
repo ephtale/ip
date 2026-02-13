@@ -23,7 +23,11 @@ public class TaskList {
      */
     public TaskList(List<Task> tasks) {
         assert tasks != null : "Source task list must not be null";
-        this.tasks = new ArrayList<>(tasks);
+        this.tasks = new ArrayList<>();
+        for (Task task : tasks) {
+            assert task != null : "Source tasks must not contain null";
+            addIfNotDuplicate(task);
+        }
         assert this.tasks != null : "Internal tasks list must be initialized";
     }
 
@@ -41,6 +45,35 @@ public class TaskList {
     public void add(Task task) {
         assert task != null : "Cannot add a null task";
         tasks.add(task);
+    }
+
+    /**
+     * Returns true if there already exists a task with the same details (excluding done state).
+     */
+    public boolean containsDuplicateOf(Task candidate) {
+        assert candidate != null : "Candidate must not be null";
+        String key = candidate.detailsKey();
+        for (Task existing : tasks) {
+            assert existing != null : "Task list must not contain null";
+            if (existing.detailsKey().equals(key)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Adds the task only if an identical task does not already exist.
+     *
+     * @return true if added, false if rejected as a duplicate.
+     */
+    public boolean addIfNotDuplicate(Task task) {
+        assert task != null : "Cannot add a null task";
+        if (containsDuplicateOf(task)) {
+            return false;
+        }
+        tasks.add(task);
+        return true;
     }
 
     /**
@@ -75,6 +108,10 @@ public class TaskList {
     public void replaceWith(List<Task> newTasks) {
         assert newTasks != null : "newTasks must not be null";
         tasks.clear();
-        tasks.addAll(newTasks);
+
+        for (Task task : newTasks) {
+            assert task != null : "newTasks must not contain null";
+            addIfNotDuplicate(task);
+        }
     }
 }

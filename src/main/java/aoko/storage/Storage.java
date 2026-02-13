@@ -9,7 +9,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import aoko.parser.Parser;
@@ -48,11 +50,17 @@ public class Storage {
             List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
             assert lines != null : "Files.readAllLines must not return null";
             List<Task> tasks = new ArrayList<>();
+            Set<String> seen = new HashSet<>();
             for (String line : lines) {
                 assert line != null : "Lines read from file must not be null";
                 Task task = decodeTask(line);
                 if (task != null) {
-                    tasks.add(task);
+                    String key = task.detailsKey();
+                    if (seen.add(key)) {
+                        tasks.add(task);
+                    } else {
+                        System.err.println("Skipping duplicate task line: " + line);
+                    }
                 }
             }
             return tasks;
@@ -103,10 +111,14 @@ public class Storage {
         assert snapshotLines != null : "snapshotLines must not be null";
 
         List<Task> decoded = new ArrayList<>();
+        Set<String> seen = new HashSet<>();
         for (String line : snapshotLines) {
             Task task = decodeTask(line);
             if (task != null) {
-                decoded.add(task);
+                String key = task.detailsKey();
+                if (seen.add(key)) {
+                    decoded.add(task);
+                }
             }
         }
 

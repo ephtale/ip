@@ -2,13 +2,26 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
 <fx:root alignment="TOP_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="400.0" stylesheets="@../css/dialog-box.css" type="javafx.scene.layout.HBox" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
   <children>
-    <Label fx:id="dialog" minHeight="-Infinity" text="Label" wrapText="true" />
-    <ImageView fx:id="displayPicture" fitHeight="99.0" fitWidth="99.0" pickOnBounds="true" preserveRatio="true" />
+    <VBox fx:id="messageContainer" alignment="TOP_RIGHT" spacing="2.0" HBox.hgrow="ALWAYS">
+      <children>
+        <Label fx:id="senderName" text="Name" wrapText="false" />
+        <VBox fx:id="messageBubble" spacing="4.0">
+          <children>
+            <Separator fx:id="topDivider" visible="false" managed="false" />
+            <Label fx:id="dialog" minHeight="-Infinity" text="Label" wrapText="true" />
+            <Separator fx:id="bottomDivider" visible="false" managed="false" />
+          </children>
+        </VBox>
+      </children>
+    </VBox>
+    <ImageView fx:id="displayPicture" fitHeight="36.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true" />
   </children>
   <padding>
     <Insets bottom="15.0" left="5.0" right="5.0" top="15.0" />

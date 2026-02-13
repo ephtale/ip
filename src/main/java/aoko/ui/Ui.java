@@ -48,7 +48,7 @@ public class Ui {
      */
     public void showWelcome() {
         showLine();
-        out.println("Hello! I'm Aoko, your Magecraft assistant.\nHow may I help you today?\n");
+        out.println("Yo! I'm Aoko, Magician Blue.\nWhatcha need?\n");
         showLine();
     }
 
@@ -57,7 +57,7 @@ public class Ui {
      */
     public void showBye() {
         showLine();
-        out.println("See you again soon!\n");
+        out.println("Mata ne shounen!\n");
         showLine();
     }
 
@@ -68,7 +68,7 @@ public class Ui {
         assert task != null : "Added task must not be null";
         assert newSize >= 0 : "Task list size must not be negative";
         showLine();
-        out.println("Got it. I've added this task:");
+        out.println("Got it. Added this task:");
         out.println("  " + task.display());
         out.println("Now you have " + newSize + " tasks in the list.");
         showLine();
@@ -80,7 +80,7 @@ public class Ui {
     public void showList(TaskList tasks) {
         assert tasks != null : "Task list must not be null";
         showLine();
-        out.println("Here are the tasks in your list:");
+        out.println("Here, the tasks in your list:");
         for (int i = 0; i < tasks.size(); i++) {
             out.println((i + 1) + "." + tasks.get(i).display());
         }
@@ -93,7 +93,7 @@ public class Ui {
     public void showMarked(Task task) {
         assert task != null : "Marked task must not be null";
         showLine();
-        out.println("Nice! I've marked this task as done:");
+        out.println("Nice! Marked this task as done:");
         out.println("  " + task.display());
         showLine();
     }
@@ -104,7 +104,7 @@ public class Ui {
     public void showUnmarked(Task task) {
         assert task != null : "Unmarked task must not be null";
         showLine();
-        out.println("OK, I've marked this task as not done yet:");
+        out.println("OK, marked this task as not done yet:");
         out.println("  " + task.display());
         showLine();
     }
@@ -116,7 +116,7 @@ public class Ui {
         assert removed != null : "Removed task must not be null";
         assert newSize >= 0 : "Task list size must not be negative";
         showLine();
-        out.println("Noted. I've removed this task:");
+        out.println("Noted. Removed this task:");
         out.println("  " + removed.display());
         out.println("Now you have " + newSize + " tasks in the list.");
         showLine();

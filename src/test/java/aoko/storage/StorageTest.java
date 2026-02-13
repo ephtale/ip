@@ -107,4 +107,26 @@ public class StorageTest {
         assertEquals("ok deadline", loaded.get(1).getDescription());
         assertEquals("ok event", loaded.get(2).getDescription());
     }
+
+    @Test
+    void load_skipsDuplicateTasks() throws IOException {
+        Path saveFile = tempDir.resolve("aoko.txt");
+
+        Files.write(saveFile, List.of(
+                "T | 0 | read book",
+                "T | 1 | read book", // duplicate details, different done flag
+                "D | 0 | return book | 2019-06-06",
+                "D | 1 | return book | 2019-06-06", // duplicate deadline
+                "E | 0 | meeting | 2019-08-06T14:00 | 2019-08-06T16:00",
+                "E | 0 | meeting | 2019-08-06T14:00 | 2019-08-06T16:00" // exact duplicate
+        ), StandardCharsets.UTF_8);
+
+        Storage storage = new Storage(saveFile);
+        List<Task> loaded = storage.load();
+
+        assertEquals(3, loaded.size());
+        assertEquals("read book", loaded.get(0).getDescription());
+        assertEquals("return book", loaded.get(1).getDescription());
+        assertEquals("meeting", loaded.get(2).getDescription());
+    }
 }

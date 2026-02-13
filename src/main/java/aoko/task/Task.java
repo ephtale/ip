@@ -45,6 +45,25 @@ public abstract class Task {
 
     protected abstract String typeIcon();
 
+    /**
+     * Returns a stable key representing this task's details (excluding done state).
+     *
+     * <p>This is used for detecting duplicates.
+     */
+    public final String detailsKey() {
+        assert description != null : "Task description must not be null";
+        String descKey = description.trim();
+        assert !descKey.isEmpty() : "Task description must not be blank";
+        return getClass().getName() + "|" + descKey + uniqueDetailsKeyExtras();
+    }
+
+    /**
+     * Additional unique details for subclasses (e.g., dates for deadlines/events).
+     */
+    protected String uniqueDetailsKeyExtras() {
+        return "";
+    }
+
     protected String taskDetails() {
         return description;
     }

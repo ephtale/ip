@@ -28,9 +28,21 @@ final class CommandValidation {
         return index;
     }
 
-    static void addTaskAndPersist(Task task, TaskList tasks, Storage storage, Ui ui) {
-        tasks.add(task);
+    static boolean addTaskAndPersist(Task task, TaskList tasks, Storage storage, Ui ui) {
+        assert task != null : "task must not be null";
+        assert tasks != null : "tasks must not be null";
+        assert storage != null : "storage must not be null";
+        assert ui != null : "ui must not be null";
+
+        if (!tasks.addIfNotDuplicate(task)) {
+            ui.showMessageBlock(
+                    "Hah. Nice try.",
+                    "That exact task is already in your list — I'm a magician, not a copy machine.");
+            return false;
+        }
+
         storage.save(tasks);
         ui.showAdded(task, tasks.size());
+        return true;
     }
 }

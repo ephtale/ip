@@ -10,9 +10,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
+import javafx.scene.text.TextAlignment;
 
 /**
  * Represents a dialog box consisting of an ImageView to represent the speaker's face
@@ -21,10 +25,27 @@ import javafx.scene.layout.HBox;
 public class DialogBox extends HBox {
     @FXML
     private Label dialog;
+
+    @FXML
+    private Label senderName;
+
+    @FXML
+    private VBox messageContainer;
+
+    @FXML
+    private VBox messageBubble;
+
+    @FXML
+    private Separator topDivider;
+
+    @FXML
+    private Separator bottomDivider;
+
     @FXML
     private ImageView displayPicture;
 
-    private DialogBox(String text, Image img) {
+    private DialogBox(String name, String text, Image img) {
+        assert name != null : "Dialog speaker name must not be null";
         assert text != null : "Dialog text must not be null";
         assert img != null : "Dialog image must not be null";
         try {
@@ -37,17 +58,77 @@ public class DialogBox extends HBox {
         }
 
         assert dialog != null : "FXML dialog label must be injected";
+        assert senderName != null : "FXML sender name label must be injected";
         assert displayPicture != null : "FXML image view must be injected";
-        setTextAndImage(text, img);
+        setNameTextAndImage(name, text, img);
     }
 
-    private void setTextAndImage(String text, Image img) {
-        dialog.setText(text);
+    private void setNameTextAndImage(String name, String text, Image img) {
+        senderName.setText(name);
+        setDialogTextWithDividers(text);
         displayPicture.setImage(img);
+
+        senderName.getStyleClass().add("sender-name");
+        dialog.getStyleClass().add("dialog-text");
+        messageBubble.getStyleClass().add("dialog-bubble");
+        topDivider.getStyleClass().add("dialog-divider");
+        bottomDivider.getStyleClass().add("dialog-divider");
+
+        senderName.setMaxWidth(Double.MAX_VALUE);
+        senderName.setAlignment(Pos.CENTER_RIGHT);
+        messageContainer.setAlignment(Pos.TOP_RIGHT);
+
+        dialog.setMaxWidth(Double.MAX_VALUE);
+        dialog.setAlignment(Pos.CENTER_RIGHT);
+        dialog.setTextAlignment(TextAlignment.RIGHT);
+        makeAvatarCircularAndSmall();
     }
 
-    private static DialogBox create(String text, Image img, boolean flip) {
-        DialogBox dialogBox = new DialogBox(text, img);
+    private void setDialogTextWithDividers(String rawText) {
+        assert rawText != null : "Dialog text must not be null";
+
+        String[] lines = rawText.split("\\R", -1);
+        boolean hadDivider = false;
+        StringBuilder cleaned = new StringBuilder();
+        for (String line : lines) {
+            assert line != null : "Message line must not be null";
+            String trimmed = line.trim();
+            if (trimmed.length() >= 5 && trimmed.chars().allMatch(ch -> ch == '_')) {
+                hadDivider = true;
+                continue;
+            }
+            cleaned.append(line).append("\n");
+        }
+
+        String cleanedText = cleaned.toString();
+        cleanedText = cleanedText.replaceAll("^\\s+", "");
+        cleanedText = cleanedText.replaceAll("\\s+$", "");
+        dialog.setText(cleanedText);
+
+        setDividerVisible(topDivider, hadDivider);
+        setDividerVisible(bottomDivider, hadDivider);
+    }
+
+    private void setDividerVisible(Separator divider, boolean visible) {
+        assert divider != null : "Divider must not be null";
+        divider.setVisible(visible);
+        divider.setManaged(visible);
+    }
+
+    private void makeAvatarCircularAndSmall() {
+        double avatarSize = 36;
+        displayPicture.setFitWidth(avatarSize);
+        displayPicture.setFitHeight(avatarSize);
+        displayPicture.setPreserveRatio(true);
+        displayPicture.setSmooth(true);
+
+        double radius = avatarSize / 2.0;
+        Circle clip = new Circle(radius, radius, radius);
+        displayPicture.setClip(clip);
+    }
+
+    private static DialogBox create(String name, String text, Image img, boolean flip) {
+        DialogBox dialogBox = new DialogBox(name, text, img);
         if (flip) {
             dialogBox.flip();
         }
@@ -64,14 +145,25 @@ public class DialogBox extends HBox {
         Collections.reverse(tmp);
         getChildren().setAll(tmp);
         setAlignment(Pos.TOP_LEFT);
-        dialog.getStyleClass().add("reply-label");
+
+        assert messageContainer != null : "Message container must be initialized";
+        assert messageBubble != null : "Message bubble must be initialized";
+        assert senderName != null : "Sender name must be initialized";
+
+        messageContainer.setAlignment(Pos.TOP_LEFT);
+        senderName.setAlignment(Pos.CENTER_LEFT);
+        messageBubble.getStyleClass().add("reply-label");
+
+        dialog.setAlignment(Pos.CENTER_LEFT);
+        dialog.setTextAlignment(TextAlignment.LEFT);
+        dialog.getStyleClass().add("reply-text");
     }
 
     public static DialogBox getUserDialog(String text, Image img) {
-        return create(text, img, false);
+        return create("Alice", text, img, false);
     }
 
     public static DialogBox getAokoDialog(String text, Image img) {
-        return create(text, img, true);
+        return create("Aoko", text, img, true);
     }
 }

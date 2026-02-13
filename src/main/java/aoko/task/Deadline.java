@@ -12,6 +12,8 @@ public class Deadline extends Task {
     private static final DateTimeFormatter DISPLAY_DATE_TIME = DateTimeFormatter.ofPattern(
             "MMM dd yyyy HH:mm",
             Locale.ENGLISH);
+    private static final DateTimeFormatter KEY_DATE = DateTimeFormatter.ISO_LOCAL_DATE;
+    private static final DateTimeFormatter KEY_DATE_TIME = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
     private final LocalDateTime by;
     private final boolean hasTime;
@@ -55,5 +57,12 @@ public class Deadline extends Task {
         assert by != null : "Deadline date/time must not be null";
         String formatted = hasTime ? by.format(DISPLAY_DATE_TIME) : by.toLocalDate().format(DISPLAY_DATE);
         return description + " (by: " + formatted + ")";
+    }
+
+    @Override
+    protected String uniqueDetailsKeyExtras() {
+        assert by != null : "Deadline date/time must not be null";
+        String byKey = hasTime ? by.format(KEY_DATE_TIME) : by.toLocalDate().format(KEY_DATE);
+        return "|" + byKey + "|" + hasTime;
     }
 }

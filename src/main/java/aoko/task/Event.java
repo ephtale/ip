@@ -12,6 +12,8 @@ public class Event extends Task {
     private static final DateTimeFormatter DISPLAY_DATE_TIME = DateTimeFormatter.ofPattern(
             "MMM dd yyyy HH:mm",
             Locale.ENGLISH);
+    private static final DateTimeFormatter KEY_DATE = DateTimeFormatter.ISO_LOCAL_DATE;
+    private static final DateTimeFormatter KEY_DATE_TIME = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
     private final LocalDateTime from;
     private final LocalDateTime to;
@@ -88,5 +90,14 @@ public class Event extends Task {
         }
 
         return description + " (from: " + formattedFrom + " to: " + formattedTo + ")";
+    }
+
+    @Override
+    protected String uniqueDetailsKeyExtras() {
+        assert from != null : "Event start must not be null";
+        assert to != null : "Event end must not be null";
+        String fromKey = fromHasTime ? from.format(KEY_DATE_TIME) : from.toLocalDate().format(KEY_DATE);
+        String toKey = toHasTime ? to.format(KEY_DATE_TIME) : to.toLocalDate().format(KEY_DATE);
+        return "|" + fromKey + "|" + fromHasTime + "|" + toKey + "|" + toHasTime;
     }
 }
