@@ -113,7 +113,6 @@ public class AokoEngine {
 
         assert parsed != null : "Parser.parseCommand must not return null";
         assert parsed.parts != null : "Parsed command parts must not be null";
-        assert parsed.parts.length >= 1 : "Parsed command must contain at least the command word";
         assert parsed.remainder != null : "Parsed remainder must not be null";
 
         AokoCommand command = CommandFactory.fromParsed(parsed);

@@ -192,60 +192,16 @@ public class Storage {
             String type = parts[0].trim();
             boolean isDone = parts.length > 1 && parts[1].trim().equals("1");
 
-            Task task;
-            switch (type) {
-            case "T" -> {
-                if (parts.length < 3) {
-                    return null;
-                }
-                String desc = parts[2] == null ? "" : parts[2].trim();
-                if (desc.isEmpty()) {
-                    return null;
-                }
-                task = new Todo(desc);
-            }
-            case "D" -> {
-                if (parts.length < 4) {
-                    return null;
-                }
-                String desc = parts[2] == null ? "" : parts[2].trim();
-                if (desc.isEmpty()) {
-                    return null;
-                }
-                Parser.ParsedDateTime parsed = parseLegacyOrIso(parts[3].trim());
-                if (parsed == null) {
-                    return null;
-                }
-                assert parsed.dateTime != null : "Parsed deadline date/time must not be null";
-                task = new Deadline(desc, parsed.dateTime, parsed.hasTime);
-            }
-            case "E" -> {
-                if (parts.length < 5) {
-                    return null;
-                }
-                String desc = parts[2] == null ? "" : parts[2].trim();
-                if (desc.isEmpty()) {
-                    return null;
-                }
-                Parser.ParsedDateTime fromParsed = Parser.parseIsoDateOrDateTime(parts[3].trim());
-                Parser.ParsedDateTime toParsed = Parser.parseIsoDateOrDateTime(parts[4].trim());
-                if (fromParsed == null || toParsed == null) {
-                    return null;
-                }
-                assert fromParsed.dateTime != null : "Parsed event start date/time must not be null";
-                assert toParsed.dateTime != null : "Parsed event end date/time must not be null";
-                task = new Event(
-                        desc,
-                        fromParsed.dateTime,
-                        fromParsed.hasTime,
-                        toParsed.dateTime,
-                        toParsed.hasTime);
-            }
-            default -> {
+            Task task = switch (type) {
+            case "T" -> decodeTodo(parts);
+            case "D" -> decodeDeadline(parts);
+            case "E" -> decodeEvent(parts);
+            default -> null;
+            };
+
+            if (task == null) {
                 return null;
             }
-            }
-
             if (isDone) {
                 task.markDone();
             }
@@ -254,6 +210,73 @@ public class Storage {
             System.err.println("Skipping corrupted task line: " + trimmed);
             return null;
         }
+    }
+
+    private static Task decodeTodo(String[] parts) {
+        assert parts != null : "parts must not be null";
+        String desc = getNonBlankTrimmedPart(parts, 2);
+        if (desc == null) {
+            return null;
+        }
+        return new Todo(desc);
+    }
+
+    private static Task decodeDeadline(String[] parts) {
+        assert parts != null : "parts must not be null";
+        String desc = getNonBlankTrimmedPart(parts, 2);
+        if (desc == null) {
+            return null;
+        }
+        String byRaw = getNonBlankTrimmedPart(parts, 3);
+        if (byRaw == null) {
+            return null;
+        }
+        Parser.ParsedDateTime parsed = parseLegacyOrIso(byRaw);
+        if (parsed == null) {
+            return null;
+        }
+        assert parsed.dateTime != null : "Parsed deadline date/time must not be null";
+        return new Deadline(desc, parsed.dateTime, parsed.hasTime);
+    }
+
+    private static Task decodeEvent(String[] parts) {
+        assert parts != null : "parts must not be null";
+        String desc = getNonBlankTrimmedPart(parts, 2);
+        if (desc == null) {
+            return null;
+        }
+        String fromRaw = getNonBlankTrimmedPart(parts, 3);
+        String toRaw = getNonBlankTrimmedPart(parts, 4);
+        if (fromRaw == null || toRaw == null) {
+            return null;
+        }
+
+        Parser.ParsedDateTime fromParsed = Parser.parseIsoDateOrDateTime(fromRaw);
+        Parser.ParsedDateTime toParsed = Parser.parseIsoDateOrDateTime(toRaw);
+        if (fromParsed == null || toParsed == null) {
+            return null;
+        }
+        assert fromParsed.dateTime != null : "Parsed event start date/time must not be null";
+        assert toParsed.dateTime != null : "Parsed event end date/time must not be null";
+        return new Event(
+                desc,
+                fromParsed.dateTime,
+                fromParsed.hasTime,
+                toParsed.dateTime,
+                toParsed.hasTime);
+    }
+
+    private static String getNonBlankTrimmedPart(String[] parts, int index) {
+        assert parts != null : "parts must not be null";
+        if (index < 0 || index >= parts.length) {
+            return null;
+        }
+        String raw = parts[index];
+        if (raw == null) {
+            return null;
+        }
+        String trimmed = raw.trim();
+        return trimmed.isEmpty() ? null : trimmed;
     }
 
     /**

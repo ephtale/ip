@@ -1,10 +1,5 @@
 package aoko.storage;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -12,6 +7,9 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -63,28 +61,42 @@ public class StorageTest {
         List<Task> loaded = storage.load();
         assertEquals(3, loaded.size());
 
-        Task loadedTodo = loaded.get(0);
-        assertTrue(loadedTodo instanceof Todo);
-        assertEquals("read book", loadedTodo.getDescription());
-        assertTrue(loadedTodo.isDone());
+        assertTodo(loaded.get(0), "read book", true);
+        assertDeadline(loaded.get(1), "return book", LocalDateTime.of(2019, 6, 6, 0, 0), false, false);
+        assertEvent(loaded.get(2), "project meeting",
+                LocalDateTime.of(2019, 8, 6, 14, 0), true,
+                LocalDateTime.of(2019, 8, 6, 16, 0), true,
+                true);
+    }
 
-        Task loadedDeadline = loaded.get(1);
-        assertTrue(loadedDeadline instanceof Deadline);
-        Deadline d = (Deadline) loadedDeadline;
-        assertEquals("return book", d.getDescription());
-        assertFalse(d.hasTime());
-        assertEquals(LocalDateTime.of(2019, 6, 6, 0, 0), d.getBy());
-        assertFalse(d.isDone());
+    private static void assertTodo(Task task, String expectedDescription, boolean expectedDone) {
+        assertTrue(task instanceof Todo);
+        assertEquals(expectedDescription, task.getDescription());
+        assertEquals(expectedDone, task.isDone());
+    }
 
-        Task loadedEvent = loaded.get(2);
-        assertTrue(loadedEvent instanceof Event);
-        Event e = (Event) loadedEvent;
-        assertEquals("project meeting", e.getDescription());
-        assertTrue(e.hasFromTime());
-        assertTrue(e.hasToTime());
-        assertEquals(LocalDateTime.of(2019, 8, 6, 14, 0), e.getFrom());
-        assertEquals(LocalDateTime.of(2019, 8, 6, 16, 0), e.getTo());
-        assertTrue(e.isDone());
+    private static void assertDeadline(Task task, String expectedDescription, LocalDateTime expectedBy,
+            boolean expectedHasTime, boolean expectedDone) {
+        assertTrue(task instanceof Deadline);
+        Deadline d = (Deadline) task;
+        assertEquals(expectedDescription, d.getDescription());
+        assertEquals(expectedHasTime, d.hasTime());
+        assertEquals(expectedBy, d.getBy());
+        assertEquals(expectedDone, d.isDone());
+    }
+
+    private static void assertEvent(Task task, String expectedDescription,
+            LocalDateTime expectedFrom, boolean expectedFromHasTime,
+            LocalDateTime expectedTo, boolean expectedToHasTime,
+            boolean expectedDone) {
+        assertTrue(task instanceof Event);
+        Event e = (Event) task;
+        assertEquals(expectedDescription, e.getDescription());
+        assertEquals(expectedFromHasTime, e.hasFromTime());
+        assertEquals(expectedToHasTime, e.hasToTime());
+        assertEquals(expectedFrom, e.getFrom());
+        assertEquals(expectedTo, e.getTo());
+        assertEquals(expectedDone, e.isDone());
     }
 
     @Test
