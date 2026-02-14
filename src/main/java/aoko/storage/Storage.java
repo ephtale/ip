@@ -158,10 +158,10 @@ public class Storage {
             return "D | " + doneFlag + " | " + deadline.getDescription() + " | " + encodedBy;
         }
         if (task instanceof Event event) {
-            String encodedFrom = event.fromHasTime()
+            String encodedFrom = event.hasFromTime()
                     ? event.getFrom().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
                     : event.getFrom().toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
-            String encodedTo = event.toHasTime()
+            String encodedTo = event.hasToTime()
                     ? event.getTo().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
                     : event.getTo().toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
             return "E | " + doneFlag + " | " + event.getDescription() 

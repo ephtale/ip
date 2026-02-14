@@ -28,7 +28,7 @@ final class CommandValidation {
         return index;
     }
 
-    static boolean addTaskAndPersist(Task task, TaskList tasks, Storage storage, Ui ui) {
+    static void addTaskAndPersist(Task task, TaskList tasks, Storage storage, Ui ui) {
         assert task != null : "task must not be null";
         assert tasks != null : "tasks must not be null";
         assert storage != null : "storage must not be null";
@@ -38,11 +38,10 @@ final class CommandValidation {
             ui.showMessageBlock(
                     "Hah. Nice try.",
                     "That exact task is already in your list - I'm a magician, not a copy machine.");
-            return false;
+            return;
         }
 
         storage.save(tasks);
         ui.showAdded(task, tasks.size());
-        return true;
     }
 }

@@ -117,25 +117,25 @@ public class AokoEngine {
         assert parsed.remainder != null : "Parsed remainder must not be null";
 
         AokoCommand command = CommandFactory.fromParsed(parsed);
-        boolean exit;
+        boolean shouldExit;
         try {
-            exit = command.execute(ui, storage, tasks);
+            shouldExit = command.execute(ui, storage, tasks);
         } catch (RuntimeException e) {
             ui.showMessageBlock("Something went wrong while executing that command.");
             return false;
         }
         assert command != null : "CommandFactory must always return a command";
-        if (exit) {
+        if (shouldExit) {
             ui.showBye();
         }
 
-        if (!exit && beforeSnapshot != null) {
+        if (!shouldExit && beforeSnapshot != null) {
             List<String> afterSnapshot = storage.snapshot(tasks);
             if (!afterSnapshot.equals(beforeSnapshot)) {
                 undoStack.push(beforeSnapshot);
             }
         }
-        return exit;
+        return shouldExit;
     }
 
     /**
@@ -167,10 +167,10 @@ public class AokoEngine {
         try (PrintStream ps = new PrintStream(baos, true, StandardCharsets.UTF_8)) {
             Ui ui = new Ui(ps);
             assert ui != null : "UI should be constructed";
-            boolean exit = process(userInput, ui);
+            boolean shouldExit = process(userInput, ui);
             String output = baos.toString(StandardCharsets.UTF_8);
             assert output != null : "Captured output must not be null";
-            return new EngineResponse(output, exit);
+            return new EngineResponse(output, shouldExit);
         }
     }
 

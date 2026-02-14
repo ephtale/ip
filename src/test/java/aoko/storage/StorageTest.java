@@ -80,8 +80,8 @@ public class StorageTest {
         assertTrue(loadedEvent instanceof Event);
         Event e = (Event) loadedEvent;
         assertEquals("project meeting", e.getDescription());
-        assertTrue(e.fromHasTime());
-        assertTrue(e.toHasTime());
+        assertTrue(e.hasFromTime());
+        assertTrue(e.hasToTime());
         assertEquals(LocalDateTime.of(2019, 8, 6, 14, 0), e.getFrom());
         assertEquals(LocalDateTime.of(2019, 8, 6, 16, 0), e.getTo());
         assertTrue(e.isDone());

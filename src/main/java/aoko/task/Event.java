@@ -19,24 +19,24 @@ public class Event extends Task {
 
     private final LocalDateTime from;
     private final LocalDateTime to;
-    private final boolean fromHasTime;
-    private final boolean toHasTime;
+    private final boolean hasFromTime;
+    private final boolean hasToTime;
 
     /**
      * Creates an event task.
      *
      * @param description Task description.
      * @param from Start date/time.
-     * @param fromHasTime Whether the start includes a time.
+      * @param hasFromTime Whether the start includes a time.
      * @param to End date/time.
-     * @param toHasTime Whether the end includes a time.
+      * @param hasToTime Whether the end includes a time.
      */
     public Event(
         String description, 
         LocalDateTime from, 
-        boolean fromHasTime, 
+          boolean hasFromTime, 
         LocalDateTime to, 
-        boolean toHasTime) {
+          boolean hasToTime) {
 
         super(description);
         assert from != null : "Event start must not be null";
@@ -44,8 +44,8 @@ public class Event extends Task {
         assert !to.isBefore(from) : "Event end must not be before start";
         this.from = from;
         this.to = to;
-        this.fromHasTime = fromHasTime;
-        this.toHasTime = toHasTime;
+        this.hasFromTime = hasFromTime;
+        this.hasToTime = hasToTime;
     }
 
     /**
@@ -67,15 +67,15 @@ public class Event extends Task {
     /**
      * Returns whether the start includes a time component.
      */
-    public boolean fromHasTime() {
-        return fromHasTime;
+    public boolean hasFromTime() {
+        return hasFromTime;
     }
 
     /**
      * Returns whether the end includes a time component.
      */
-    public boolean toHasTime() {
-        return toHasTime;
+    public boolean hasToTime() {
+        return hasToTime;
     }
 
     @Override
@@ -88,17 +88,17 @@ public class Event extends Task {
         assert from != null : "Event start must not be null";
         assert to != null : "Event end must not be null";
         assert !to.isBefore(from) : "Event end must not be before start";
-        String formattedFrom = fromHasTime 
+        String formattedFrom = hasFromTime 
                                ? from.format(DISPLAY_DATE_TIME) 
                                : from.toLocalDate().format(DISPLAY_DATE);
 
         String formattedTo;
-        if (toHasTime && fromHasTime && from.toLocalDate().equals(to.toLocalDate())) {
+        if (hasToTime && hasFromTime && from.toLocalDate().equals(to.toLocalDate())) {
             formattedTo = to.toLocalTime().format(DateTimeFormatter.ofPattern(
                 "HH:mm", 
                 Locale.ENGLISH));
         } else {
-            formattedTo = toHasTime 
+            formattedTo = hasToTime 
                           ? to.format(DISPLAY_DATE_TIME) 
                           : to.toLocalDate().format(DISPLAY_DATE);
         }
@@ -110,12 +110,12 @@ public class Event extends Task {
     protected String uniqueDetailsKeyExtras() {
         assert from != null : "Event start must not be null";
         assert to != null : "Event end must not be null";
-        String fromKey = fromHasTime 
+        String fromKey = hasFromTime 
                          ? from.format(KEY_DATE_TIME) 
                          : from.toLocalDate().format(KEY_DATE);
-        String toKey = toHasTime 
+        String toKey = hasToTime 
                        ? to.format(KEY_DATE_TIME) 
                        : to.toLocalDate().format(KEY_DATE);
-        return "|" + fromKey + "|" + fromHasTime + "|" + toKey + "|" + toHasTime;
+        return "|" + fromKey + "|" + hasFromTime + "|" + toKey + "|" + hasToTime;
     }
 }

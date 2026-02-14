@@ -88,13 +88,13 @@ public class DialogBox extends HBox {
         assert rawText != null : "Dialog text must not be null";
 
         String[] lines = rawText.split("\\R", -1);
-        boolean hadDivider = false;
+        boolean hasDividerLines = false;
         StringBuilder cleaned = new StringBuilder();
         for (String line : lines) {
             assert line != null : "Message line must not be null";
             String trimmed = line.trim();
             if (trimmed.length() >= 5 && trimmed.chars().allMatch(ch -> ch == '_')) {
-                hadDivider = true;
+                hasDividerLines = true;
                 continue;
             }
             cleaned.append(line).append("\n");
@@ -105,14 +105,14 @@ public class DialogBox extends HBox {
         cleanedText = cleanedText.replaceAll("\\s+$", "");
         dialog.setText(cleanedText);
 
-        setDividerVisible(topDivider, hadDivider);
-        setDividerVisible(bottomDivider, hadDivider);
+        setDividerVisible(topDivider, hasDividerLines);
+        setDividerVisible(bottomDivider, hasDividerLines);
     }
 
-    private void setDividerVisible(Separator divider, boolean visible) {
+    private void setDividerVisible(Separator divider, boolean isVisible) {
         assert divider != null : "Divider must not be null";
-        divider.setVisible(visible);
-        divider.setManaged(visible);
+        divider.setVisible(isVisible);
+        divider.setManaged(isVisible);
     }
 
     private void makeAvatarCircularAndSmall() {
@@ -127,9 +127,9 @@ public class DialogBox extends HBox {
         displayPicture.setClip(clip);
     }
 
-    private static DialogBox create(String name, String text, Image img, boolean flip) {
+    private static DialogBox create(String name, String text, Image img, boolean shouldFlip) {
         DialogBox dialogBox = new DialogBox(name, text, img);
-        if (flip) {
+        if (shouldFlip) {
             dialogBox.flip();
         }
         return dialogBox;

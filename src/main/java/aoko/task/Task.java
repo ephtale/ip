@@ -58,7 +58,7 @@ public abstract class Task {
     }
 
     /**
-     * Additional unique details for subclasses (e.g., dates for deadlines/events).
+     * Returns additional unique details for subclasses (e.g., dates for deadlines/events).
      */
     protected String uniqueDetailsKeyExtras() {
         return "";
